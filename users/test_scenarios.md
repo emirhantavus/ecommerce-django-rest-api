@@ -6,7 +6,10 @@
 - Ensure a user can register with valid credentials.
 - Validate password strength requirements.
 - Test registration with missing fields. 
-- Test registration with empty strings. 
+- Test registration with empty strings.
+- Test registration with weak password.
+- Test registration with duplicate email.
+- Test password hashing.
 
 ### 2.Login
 - Ensure a user can log in with valid credentials.
@@ -24,7 +27,7 @@
 
 
 ## To-Do List
-- [ ] Test user registration
+- [x] Test user registration
 - [ ] Test login func
 - [ ] Validate token authentication
 - [ ] Test profile update func
