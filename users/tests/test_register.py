@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class UserTestCase(TestCase):
+class RegisterTestCase(TestCase):
       def test_user_registration(self):
             url = reverse('register')
             data = {

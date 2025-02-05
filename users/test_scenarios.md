@@ -15,6 +15,8 @@
 - Ensure a user can log in with valid credentials.
 - Test login with incorrect password (should fail).
 - Test login with missing fields.
+- Test login with unregistered email.
+- Test login with invalid email format.
 
 ### 3.Profile Management
 - Ensure a user can edit their profile.
