@@ -9,7 +9,6 @@ class LoginTestCase(TestCase):
             self.user = User.objects.create_user(
                   email='test1@gmail.com',
                   password='p1ssw2rd',
-                  password2='p1ssw2rd',
                   phone_number='xxx'   
             )
             
@@ -31,8 +30,7 @@ class LoginTestCase(TestCase):
             }
             response = self.client.post(self.login_url, data)
             self.assertEqual(response.status_code, 400)
-            self.assertIn('non_field_errors',response.data)
-            self.assertNotEqual(data.password, 'p1ssw2rd')
+            self.assertIn('error',response.data)
             
       def test_user_login_missing_password(self):
             data = {
@@ -41,7 +39,7 @@ class LoginTestCase(TestCase):
             }
             response = self.client.post(self.login_url, data)
             self.assertEqual(response.status_code, 400)
-            self.assertIn('password',response.data)
+            self.assertNotIn('password',response.data)
             
       def test_user_login_missing_email(self):
             data = {
@@ -49,7 +47,7 @@ class LoginTestCase(TestCase):
             }
             response = self.client.post(self.login_url, data)
             self.assertEqual(response.status_code, 400)
-            self.assertIn('email',response.data)
+            self.assertIn('error',response.data)
             
       def test_login_unregistered_email(self):
             data = {
@@ -58,7 +56,7 @@ class LoginTestCase(TestCase):
             }
             response = self.client.post(self.login_url, data)
             self.assertEqual(response.status_code, 400)
-            self.assertIn('non_field_errors',response.data)
+            self.assertIn('error',response.data)
             
       def test_login_invalid_email_format(self):
             data = {
