@@ -30,8 +30,8 @@
 
 ## To-Do List
 - [x] Test user registration
-- [ ] Test login func
-- [ ] Validate token authentication
+- [x] Test login func
+- [x] Validate token authentication
 - [ ] Test profile update func
 - [ ] Check unauthorized profile access
 - [ ] Ensure token refresh works correctly
