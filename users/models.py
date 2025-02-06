@@ -50,3 +50,21 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
       
       def __str__(self):
           return f"{self.email} ({self.role})"
+
+class Profile(models.Model):
+    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE ,related_name='profile')
+    seller_name= models.CharField(max_length=100, null=True,blank=True)
+    company_name = models.CharField(max_length=100, null=True, blank=True)
+    
+    def __str__(self):
+        if self.user.role == CustomUser.SELLER:
+            return f"{self.user.email} -- {self.seller_name or self.company_name}"
+        return f"{self.user.email} (customer)"
+    
+    @property
+    def is_seller(self):
+        return self.user.role == CustomUser.SELLER
+    
+    class Meta:
+        verbose_name = "Profile"
+        verbose_name_plural = "Profiles"

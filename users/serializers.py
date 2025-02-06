@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
-
+from .models import Profile
 User = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -26,3 +26,16 @@ class UserSerializer(serializers.ModelSerializer):
       class Meta:
             model = User
             fields = ('id','email','phone_number')
+            
+class ProfileSerializer(serializers.ModelSerializer):
+      email = serializers.SerializerMethodField()
+      role = serializers.SerializerMethodField()
+      class Meta:
+            model = Profile
+            fiels = ('email','role','seller_name','company_name')
+            
+      def get_email(self, obj):
+            return obj.user.email
+      
+      def get_role(self, obj):
+            return obj.user.role 
