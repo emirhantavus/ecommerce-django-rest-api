@@ -32,7 +32,7 @@ class ProfileSerializer(serializers.ModelSerializer):
       role = serializers.SerializerMethodField()
       class Meta:
             model = Profile
-            fiels = ('email','role','seller_name','company_name')
+            fields = ('email','role','seller_name','company_name')
             
       def get_email(self, obj):
             return obj.user.email
