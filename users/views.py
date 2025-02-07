@@ -7,6 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import get_object_or_404
 
 
 class RegisterAPIView(APIView):
@@ -68,17 +69,17 @@ class ProtectedEndpoint(APIView):
 class ProfileAPIView(APIView):
       permission_classes = [IsAuthenticated]
       
-      def get(self,request):
-            profile = request.user.profile
+      def get(self,request,pk):
+            profile = get_object_or_404(Profile, id=pk)
             serializer = ProfileSerializer(profile)
             
             return Response(serializer.data, status=status.HTTP_200_OK)
       
-      def put(self,request):
-            if not request.user.is_authenticated:
-                  return Response({"error":"Unauthorized"},status=status.HTTP_401_UNAUTHORIZED)
+      def put(self,request,pk):
+            profile = get_object_or_404(Profile,id=pk)
+            if profile.user != request.user:
+                  return Response({'error':"U can not edit another's profile."},status=status.HTTP_403_FORBIDDEN)
             
-            profile = request.user.profile
             serializer = ProfileSerializer(profile, data=request.data, partial=True)
             if serializer.is_valid():
                   serializer.save()
