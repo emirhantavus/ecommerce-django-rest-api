@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class AuthIntegrationTest(TestCase):
-      def test_register_login(self):
+      def test_register_login_protected_endpoint(self):
             # 1. Create a user
             
             register_url = reverse('register')
@@ -37,4 +37,3 @@ class AuthIntegrationTest(TestCase):
             auth_header = f"Token {token}"
             protected_response = self.client.get(protected_url, HTTP_AUTHORIZATION=auth_header)
             self.assertEqual(protected_response.status_code, 200)
-            print(protected_response.data)

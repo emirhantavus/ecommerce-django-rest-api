@@ -20,18 +20,19 @@
 
 ### 3.Profile Management
 - Ensure a user can edit their profile.
-- Check that unauthorized users can not edit another user's profile.
+- Check that unauthorized users can not edit another user's profile. ---No need
+- User can access their profile.
 
 ### 4.Token Authentication
 - Verify that a valid token can access to protected endpoints.
-- Ensure an expired token deniess access.
-- Test refreshing token.
+- Ensure an expired token deniess access. ---JWT token isn't used here
+- Test refreshing token. ---JWT token isn't used here
 
 
 ## To-Do List
 - [x] Test user registration
 - [x] Test login func
 - [x] Validate token authentication
-- [ ] Test profile update func
-- [ ] Check unauthorized profile access
-- [ ] Ensure token refresh works correctly
+- [x] Test profile update func
+- [x] Check unauthorized profile access
+- [x] Ensure token refresh works correctly
