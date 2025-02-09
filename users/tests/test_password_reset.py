@@ -16,7 +16,7 @@ class PasswordResetTest(APITestCase):
             )
             
             self.reset_url = reverse('password_reset')
-            self.confirm_url = reverse('password_confirm')
+            self.confirm_url = reverse('password_reset_confirm')
             
       def test_request_password_reset_with_valid_email(self):
             response = self.client.post(self.reset_url, {'email':self.user.email})
@@ -49,8 +49,9 @@ class PasswordResetTest(APITestCase):
             self.assertEqual(response.status_code, 400)
             
       def test_login_with_old_password(self):
-            self.user.set_password('passw0rd')
+            self.user.set_password('newpassw0rd1')
             self.user.save()
+            self.user.refresh_from_db()
             login_url = reverse('login')
             response = self.client.post(login_url, {'email':self.user.email, 'password':'passw0rd'})
             self.assertEqual(response.status_code, 400)

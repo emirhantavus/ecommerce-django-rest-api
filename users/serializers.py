@@ -39,3 +39,12 @@ class ProfileSerializer(serializers.ModelSerializer):
       
       def get_role(self, obj):
             return obj.user.role 
+      
+class PasswordResetSerializer(serializers.Serializer):
+      email =serializers.EmailField()
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+      email = serializers.EmailField()
+      token = serializers.CharField()
+      new_password = serializers.CharField(min_length=8, write_only=True)
+      
