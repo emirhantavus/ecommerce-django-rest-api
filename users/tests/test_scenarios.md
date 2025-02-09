@@ -28,6 +28,14 @@
 - Ensure an expired token deniess access. ---JWT token isn't used here
 - Test refreshing token. ---JWT token isn't used here
 
+### 5. Password Reset and Change
+- Ensure a user can request a password reset email.
+- Ensure a valid token allows password reset.
+- Test expired or incorrect token (fail).
+- Ensure users can change their password
+- Test password change with incorrect current password.
+- Login with new password correctly.
+
 
 ## To-Do List
 - [x] Test user registration
@@ -36,3 +44,6 @@
 - [x] Test profile update func
 - [x] Check unauthorized profile access
 - [x] Ensure token refresh works correctly
+- [ ] Test password reset
+- [ ] Test password change
+- [ ] Login after change password
