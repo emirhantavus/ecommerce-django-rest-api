@@ -8,6 +8,7 @@ class Product(BaseModel):
       description: Optional[str] = None
       price: float
       created_at: datetime=Field(default_factory=datetime.utcnow)
+      user_id: Optional[str] = None
       
       
 @field_validator("created_at")
