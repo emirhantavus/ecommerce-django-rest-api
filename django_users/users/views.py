@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-
+from rest_framework.authentication import TokenAuthentication
 
 class RegisterAPIView(APIView):
       permission_classes = [AllowAny]
@@ -133,3 +133,14 @@ class PasswordResetConfirmView(APIView):
                         return Response({'message':'Password is changed successfully.'},status=status.HTTP_200_OK)
                   return Response({'error':'Invalid or expired token.!'},status=status.HTTP_400_BAD_REQUEST)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      
+      
+      
+#############################################################################################################
+#############################################################################################################
+
+class CheckTokenAPIView(APIView):
+      permission_classes = [IsAuthenticated]
+      authentication_classes = [TokenAuthentication]
+      def get(self, request):
+            return Response({"user_id":request.user.id,"is_valid":True})
