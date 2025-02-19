@@ -1,8 +1,9 @@
-from fastapi import APIRouter , HTTPException
+from fastapi import APIRouter , HTTPException , Depends
 from typing import List , Dict
 from app.models.product import Product
 from app.core.database import products_collection
 from bson import ObjectId
+from app.dependency.dependencies import get_current_user
 
 router = APIRouter()
 
@@ -14,11 +15,17 @@ async def get_products():
       return products
 
 @router.post("/", response_model=Product)
-async def create_product(product: Product):
+async def create_product(product: Product, current_user: str = Depends(get_current_user)):
       product_dict = product.dict()
+      product_dict["user_id"] = str(current_user)
       result = await products_collection.insert_one(product_dict)
-      product_dict["id"] = str(result.inserted_id)
-      return product_dict
+      inserted_product = await products_collection.find_one({"_id":result.inserted_id})
+      
+      return {"message":"Product added successfuly.",
+              "product_id":str(result.inserted_id),
+              "name":inserted_product["name"],
+              "price":inserted_product["price"],
+              "user_id":str(inserted_product["user_id"])}
 
 @router.get("/{product_id}",response_model=Product)
 async def get_products_by_id(product_id: str):
