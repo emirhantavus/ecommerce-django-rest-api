@@ -13,24 +13,46 @@ class AddCategoryTest(APITestCase):
                   phone_number='xxx'
             )
             self.login_url = reverse('login')
+            self.parent_category = Category.objects.create(name="django")
             
-      def test_login(self):
-            data = {
+            login_data_admin = {
                   "email":"admin@gmail.com",
                   "password":"passw0rd"
             }
-            response = self.client.post(self.login_url, data)
-            self.assertEqual(response.status_code,200)
-            self.assertIn('token',response.data)
-            self.token = response.data['token']
-            print(self.token) # Okay here.
+            response_admin = self.client.post(self.login_url, login_data_admin)
+            self.admin_token = response_admin.data.get('token')
             
-      def test_add_category(self):
+            self.user = User.objects.create_user(
+                  email="user@gmail.com",
+                  password="passw0rd",
+                  phone_number="xxx"
+            )
+            login_data_user = {
+                  "email":"user@gmail.com",
+                  "password":"passw0rd"
+            }
+            
+            response_user = self.client.post(self.login_url, login_data_user)
+            self.user_token = response_user.data.get('token')
+            
+      def test_add_category_admin(self):
             data = {
                   "name":"software",
-                  "parent":"django"
+                  "parent":self.parent_category.id
             }
-            category_url = reverse('category')
-            response = self.client.post(category_url, data)
+            category_url = reverse('category-list')
+            auth_header = f"Token {self.admin_token}"
+            response = self.client.post(category_url, data, HTTP_AUTHORIZATION=auth_header)
             self.assertEqual(response.status_code, 201)
+            print(response.data)
+            
+      def test_add_category_not_admin(self):
+            data = {
+                  "name":"hardware",
+                  "parent":self.parent_category.id
+            }
+            category_url = reverse('category-list')
+            auth_header = f"Token {self.user_token}"
+            response = self.client.post(category_url, data, HTTP_AUTHORIZATION=auth_header)
+            self.assertEqual(response.status_code, 403) #We need to get 403 status here.
             print(response.data)
