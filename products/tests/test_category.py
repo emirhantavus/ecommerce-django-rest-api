@@ -44,7 +44,6 @@ class AddCategoryTest(APITestCase):
             auth_header = f"Token {self.admin_token}"
             response = self.client.post(category_url, data, HTTP_AUTHORIZATION=auth_header)
             self.assertEqual(response.status_code, 201)
-            print(response.data)
             
       def test_add_category_not_admin(self):
             data = {
@@ -55,4 +54,3 @@ class AddCategoryTest(APITestCase):
             auth_header = f"Token {self.user_token}"
             response = self.client.post(category_url, data, HTTP_AUTHORIZATION=auth_header)
             self.assertEqual(response.status_code, 403) #We need to get 403 status here.
-            print(response.data)
