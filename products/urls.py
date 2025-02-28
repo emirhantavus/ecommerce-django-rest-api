@@ -6,7 +6,7 @@ router = DefaultRouter()
 router.register(r'category',CategoryViewSet)
 
 urlpatterns = [
-      path('product/',ProductAPIView.as_view(),name='product')
+      path('products/',ProductAPIView.as_view(),name='products')
 ]
 
 urlpatterns += router.urls
