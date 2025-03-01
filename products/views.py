@@ -9,12 +9,16 @@ from rest_framework.permissions import AllowAny , IsAdminUser, IsAuthenticated
 class CategoryViewSet(viewsets.ModelViewSet):
       queryset = Category.objects.all()
       serializer_class = CategorySerializer
-      permission_classes = [IsAdminUser]
+      permission_classes = [IsAdminUser] # change it later.
       
 class ProductAPIView(APIView):
-      permission_classes = [IsAuthenticated]
+      def get_permissions(self):
+            if self.request.method == 'POST':
+                  return [IsAuthenticated()]
+            return [AllowAny()]
+
       def get(self,request):
-            queryset = Product.objects.all()
+            queryset = Product.objects.select_related('seller','category').prefetch_related('seller_product_set')
             
             seller_id = request.query_params.get("seller")
             if seller_id:
@@ -22,7 +26,7 @@ class ProductAPIView(APIView):
                   
             category_id = request.query_params.get("category")
             if category_id == 'null':
-                  queryset = queryset.filter(category_isnull=True)
+                  queryset = queryset.filter(category__isnull=True)
             elif category_id:
                   queryset = queryset.filter(category=category_id)
                   
@@ -42,7 +46,7 @@ class ProductAPIView(APIView):
             return Response(serializer.data,status=status.HTTP_200_OK)
       
       def post(self,request):
-            serializer = ProductSerializer(data=request.data)
+            serializer = ProductSerializer(data=request.data, context={'request':request})
             if serializer.is_valid():
                   serializer.save()
                   return Response({'message':'Product added.'},status=status.HTTP_201_CREATED)

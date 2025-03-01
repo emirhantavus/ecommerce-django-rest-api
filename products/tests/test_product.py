@@ -19,7 +19,8 @@ class AddProductTest(APITestCase):
             self.example_user = User.objects.create_user(
                   email="user@gmail.com",
                   password="passw0rd",
-                  phone_number="xxx"
+                  phone_number="xxx",
+                  role="seller"
             )
             self.example_category = Category.objects.create(
                   name="phone"
@@ -45,7 +46,7 @@ class AddProductTest(APITestCase):
                   "active":True,
                   "image":image_file
             }
-            product_url = reverse('product')
+            product_url = reverse('products')
             auth_header = f"Token {self.user_token}"
             response = self.client.post(product_url, product_data, HTTP_AUTHORIZATION=auth_header)
             self.assertEqual(response.status_code, 201)
@@ -62,7 +63,7 @@ class AddProductTest(APITestCase):
                   "active":True,
                   "image":image_file
             }
-            product_url = reverse('product')
+            product_url = reverse('products')
             response = self.client.post(product_url,product_data)
             self.assertEqual(response.status_code, 401)
             
@@ -78,7 +79,7 @@ class AddProductTest(APITestCase):
                   "active":True,
                   "image":image_file
             }
-            product_url = reverse('product')
+            product_url = reverse('products')
             auth_header = f"Token {self.user_token}"
             response = self.client.post(product_url, product_data, HTTP_AUTHORIZATION=auth_header)
             self.assertEqual(response.status_code, 400) # should be bad request (400)

@@ -23,6 +23,10 @@ class ProductSerializer(serializers.ModelSerializer):
             model = Product
             fields = ('id','name','price','stock','active','seller_products','discounted_price','low_stock')
             
+      def create(self, validated_data):
+            validated_data['seller'] = self.context['request'].user
+            return super().create(validated_data)
+            
       def get_seller_products(self, obj):
             return ProductSerializer(Product.objects.filter(seller=obj.seller),many=True).data
       
