@@ -7,6 +7,10 @@ from .serializers import CategorySerializer, ProductSerializer , SimpleProductSe
 from rest_framework.permissions import AllowAny , IsAdminUser, IsAuthenticated
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.generics import ListAPIView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from django.views.decorators.vary import vary_on_headers
 
 class CategoryViewSet(viewsets.ModelViewSet):
       queryset = Category.objects.all()
@@ -20,7 +24,7 @@ class ProductAPIView(APIView, LimitOffsetPagination):
             return [AllowAny()]
 
       def get(self,request):
-            queryset = Product.objects.select_related('seller','category').prefetch_related('seller__products')
+            queryset = Product.objects.select_related('seller','category').prefetch_related('seller__products').order_by('pk')
             
             seller_id = request.query_params.get("seller")
             if seller_id:
@@ -60,13 +64,17 @@ class ProductAPIView(APIView, LimitOffsetPagination):
                   return Response({'message':'Product added.'},status=status.HTTP_201_CREATED)
             return Response({'errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
       
-      
+
+@method_decorator(cache_page(60*30, key_prefix='seller_products'),name='dispatch')
 class SellerProductsListView(ListAPIView):
       serializer_class = SimpleProductSerializer
       permission_classes = [AllowAny]
       
       def get_queryset(self):
+            import time
+            print("query_set calıstı, 2 saniye bekleniyor")
+            time.sleep(2)
             seller_id = self.kwargs['seller_id']
             if not seller_id:
                   raise ValueError("Not found Seller ID.")
-            return Product.objects.filter(seller_id=seller_id)
+            return Product.objects.filter(seller_id=seller_id).order_by('pk')
