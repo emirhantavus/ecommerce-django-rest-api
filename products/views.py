@@ -92,17 +92,20 @@ class SellerProductsListView(ListAPIView):
             return Product.objects.filter(seller_id=seller_id).order_by('pk')
       
       
-class ProductUpdateAPIView(APIView):
+class ProductUpdateDeleteAPIView(APIView):
       permission_classes = [IsAuthenticated]
       
-      def get_object(self, pk):
+      def get_object(self, request, pk):
             product = get_object_or_404(Product, pk=pk)
             if product.seller != self.request.user:
-                  return Response({'message':'U can not edit this product.'},status=status.HTTP_403_FORBIDDEN)
+                  if request.method == 'PUT' or request.method == 'PATCH':
+                        return Response({'message':'U can not edit this product.'},status=status.HTTP_403_FORBIDDEN)
+                  elif request.method == 'DELETE':
+                        return Response({'message':'U can not delete this product.'},status=status.HTTP_403_FORBIDDEN)
             return product
       
       def put(self,request,pk):
-            product = self.get_object(pk)
+            product = self.get_object(request, pk)
             if isinstance(product, Response):
                   return product
             
@@ -113,7 +116,7 @@ class ProductUpdateAPIView(APIView):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
       
       def patch(self,request,pk):
-            product = self.get_object(pk)
+            product = self.get_object(request, pk)
             if isinstance(product, Response):
                   return product
             
@@ -122,6 +125,14 @@ class ProductUpdateAPIView(APIView):
                   serializer.save()
                   return Response({'message':'Product edited successfuly'},status=status.HTTP_200_OK)
             return Response({'message':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+      
+      def delete(self,request, pk):
+            product = self.get_object(request, pk)
+            if isinstance(product, Response):
+                  return product
+            
+            product.delete()
+            return Response({'message':'product deleted.'},status=status.HTTP_204_NO_CONTENT)
       
       
 class ProductDetailAPIView(RetrieveAPIView):

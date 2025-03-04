@@ -14,6 +14,11 @@ class CategorySerializer(serializers.ModelSerializer):
       def get_subcategories(self,obj):
             return CategorySerializer(obj.subcategories.all(), many=True).data
       
+class SellerSerializer(serializers.ModelSerializer):
+      class Meta:
+            model = User
+            fields = ('id','email','phone_number')############
+      
       
 class SimpleProductSerializer(serializers.ModelSerializer):
       class Meta:
@@ -24,9 +29,10 @@ class SimpleProductSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
       discounted_price = serializers.SerializerMethodField()
       low_stock = serializers.SerializerMethodField()
+      seller = SellerSerializer(read_only=True)
       class Meta:
             model = Product
-            fields = ('id','name','price','stock','active','discounted_price','low_stock','category')
+            fields = ('id','name','price','stock','active','discounted_price','low_stock','category','seller')
             
       def create(self, validated_data):
             validated_data['seller'] = self.context['request'].user

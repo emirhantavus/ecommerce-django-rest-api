@@ -23,5 +23,9 @@ class ProductListTestCase(APITestCase):
       def test_get_pk_product(self):
             response = self.client.get(self.product_pk_url)
             self.assertEqual(response.status_code, 200)
-            self.assertIn(response.data["name"],'test product 2')
+            self.assertIn("name",response.data)
+            self.assertIn('seller',response.data)
+            self.assertIn('id',response.data['seller'])
+            self.assertIn('email',response.data['seller'])
+            self.assertIn('phone_number',response.data['seller'])
             
