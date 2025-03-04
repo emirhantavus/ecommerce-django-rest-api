@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from django.views.decorators.vary import vary_on_headers
+from django.shortcuts import get_object_or_404
 
 class CategoryViewSet(viewsets.ModelViewSet):
       queryset = Category.objects.all()
@@ -47,6 +48,12 @@ class ProductAPIView(APIView, LimitOffsetPagination):
                   queryset = queryset.filter(discount=True)
             elif discount_filter == 'false':
                   queryset = queryset.filter(discount=False)
+            
+            #################
+            
+            search_query = request.query_params.get("search")
+            if search_query:
+                  queryset = queryset.filter(name__icontains=search_query)
                   
             #pagination here
             results = self.paginate_queryset(queryset, request, view=self)
@@ -58,11 +65,16 @@ class ProductAPIView(APIView, LimitOffsetPagination):
             return Response(serializer.data,status=status.HTTP_200_OK)
       
       def post(self,request):
-            serializer = ProductSerializer(data=request.data, context={'request':request})
-            if serializer.is_valid():
-                  serializer.save()
-                  return Response({'message':'Product added.'},status=status.HTTP_201_CREATED)
+            if request.user.role == "seller": #only sellers can add items.
+                  serializer = ProductSerializer(data=request.data, context={'request':request})
+                  if serializer.is_valid():
+                        serializer.save()
+                        return Response({'message':'Product added.'},status=status.HTTP_201_CREATED)
+            else:
+                  return Response({'message':'Only sellers can add products.'},status=status.HTTP_403_FORBIDDEN)
             return Response({'errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+      
+      
       
 
 @method_decorator(cache_page(60*30, key_prefix='seller_products'),name='dispatch')
@@ -78,3 +90,35 @@ class SellerProductsListView(ListAPIView):
             if not seller_id:
                   raise ValueError("Not found Seller ID.")
             return Product.objects.filter(seller_id=seller_id).order_by('pk')
+      
+      
+class ProductUpdateAPIView(APIView):
+      permission_classes = [IsAuthenticated]
+      
+      def get_object(self, pk):
+            product = get_object_or_404(Product, pk=pk)
+            if product.seller != self.request.user:
+                  return Response({'message':'U can not edit this product.'},status=status.HTTP_403_FORBIDDEN)
+            return product
+      
+      def put(self,request,pk):
+            product = self.get_object(pk)
+            if isinstance(product, Response):
+                  return product
+            
+            serializer = ProductSerializer(product, data=request.data)
+            if serializer.is_valid():
+                  serializer.save()
+                  return Response({'message':'Product edited successfuly','product':serializer.data},status=status.HTTP_200_OK)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+      
+      def patch(self,request,pk):
+            product = self.get_object(pk)
+            if isinstance(product, Response):
+                  return product
+            
+            serializer = ProductSerializer(product, data= request.data, partial=True) #partial for edit only for 1 field.
+            if serializer.is_valid():
+                  serializer.save()
+                  return Response({'message':'Product edited successfuly'},status=status.HTTP_200_OK)
+            return Response({'message':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
