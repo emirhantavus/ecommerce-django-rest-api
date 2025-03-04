@@ -6,7 +6,7 @@ from .models import Product, Category
 from .serializers import CategorySerializer, ProductSerializer , SimpleProductSerializer
 from rest_framework.permissions import AllowAny , IsAdminUser, IsAuthenticated
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView , RetrieveAPIView
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
@@ -84,7 +84,7 @@ class SellerProductsListView(ListAPIView):
       
       def get_queryset(self):
             import time
-            print("query_set calıstı, 2 saniye bekleniyor")
+            print("2 saniye bekleniyor") # simdilik kalsın sonra sil.
             time.sleep(2)
             seller_id = self.kwargs['seller_id']
             if not seller_id:
@@ -122,3 +122,9 @@ class ProductUpdateAPIView(APIView):
                   serializer.save()
                   return Response({'message':'Product edited successfuly'},status=status.HTTP_200_OK)
             return Response({'message':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+      
+      
+class ProductDetailAPIView(RetrieveAPIView):
+      queryset = Product.objects.all()
+      serializer_class = ProductSerializer
+      permission_classes = [AllowAny]
