@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from .models import Product, Category
+from decimal import Decimal
 
 User = get_user_model()
 
@@ -30,9 +31,10 @@ class ProductSerializer(serializers.ModelSerializer):
       discounted_price = serializers.SerializerMethodField()
       low_stock = serializers.SerializerMethodField()
       seller = SellerSerializer(read_only=True)
+      price = serializers.DecimalField(max_digits=10,decimal_places=2,coerce_to_string=False)
       class Meta:
             model = Product
-            fields = ('id','name','price','stock','active','discounted_price','low_stock','category','seller')
+            fields = ('id','name','price','discounted_price','stock','active','low_stock','category','seller')
             
       def create(self, validated_data):
             validated_data['seller'] = self.context['request'].user
@@ -40,9 +42,11 @@ class ProductSerializer(serializers.ModelSerializer):
             
       
       def get_discounted_price(self,obj):
+            price = Decimal(obj.price) if isinstance(obj.price, float) else obj.price
+            discount_rate = Decimal(obj.discount_rate) if isinstance(obj.discount_rate, float) else obj.discount_rate
             if obj.discount and obj.discount_rate > 0:
-                  return round(obj.price * (1 - obj.discount_rate / 100), 2)
-            return obj.price
+                  return round(price * (1 - discount_rate / Decimal(100)), 2)
+            return None
             
       def get_low_stock(self, obj):
             if obj.stock <= 5:

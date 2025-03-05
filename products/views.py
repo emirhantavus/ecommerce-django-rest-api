@@ -29,18 +29,18 @@ class ProductAPIView(APIView, LimitOffsetPagination):
             
             seller_id = request.query_params.get("seller")
             if seller_id:
-                  queryset = queryset.filter(seller=seller_id)
+                  queryset = queryset.filter(seller=int(seller_id))
                   
-            category_id = request.query_params.get("category")
-            if category_id == 'null':
+            category_name = request.query_params.get("category")
+            if category_name == 'null':
                   queryset = queryset.filter(category__isnull=True)
-            elif category_id:
-                  queryset = queryset.filter(category=category_id)
+            elif category_name:
+                  queryset = queryset.filter(category__name__iexact=category_name)
                   
-            stock_filter = request.query_params.get("stock")
-            if stock_filter == '0':
+            in_stock = request.query_params.get("stock")
+            if in_stock == '0':
                   queryset = queryset.filter(stock=0)
-            elif stock_filter == "1":
+            elif in_stock == "1":
                   queryset = queryset.filter(stock__gt=0)
                   
             discount_filter = request.query_params.get("discount")
@@ -55,6 +55,29 @@ class ProductAPIView(APIView, LimitOffsetPagination):
             if search_query:
                   queryset = queryset.filter(name__icontains=search_query)
                   
+            min_price = request.query_params.get("min_price")
+            max_price = request.query_params.get("max_price")
+            
+            if min_price:
+                  queryset = queryset.filter(price__gte=min_price)
+            if max_price:
+                  queryset = queryset.filter(price__lte=max_price)
+                  
+            ######
+            sort_by = request.query_params.get("sort_by")
+            order = request.query_params.get("order","asc")
+            
+            sort_fields = ["price","created_at","stock"]
+            
+            if sort_by in sort_fields:
+                  if order == 'desc':
+                        sort_by = f"-{sort_by}"
+                  queryset = queryset.order_by(sort_by)
+            ######
+            
+            
+            
+            
             #pagination here
             results = self.paginate_queryset(queryset, request, view=self)
             if results is not None:
@@ -97,8 +120,8 @@ class ProductUpdateDeleteAPIView(APIView):
       
       def get_object(self, request, pk):
             product = get_object_or_404(Product, pk=pk)
-            if product.seller != self.request.user:
-                  if request.method == 'PUT' or request.method == 'PATCH':
+            if product.seller != request.user:
+                  if request.method in ['PUT','PATCH']:
                         return Response({'message':'U can not edit this product.'},status=status.HTTP_403_FORBIDDEN)
                   elif request.method == 'DELETE':
                         return Response({'message':'U can not delete this product.'},status=status.HTTP_403_FORBIDDEN)
