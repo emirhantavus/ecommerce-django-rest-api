@@ -36,7 +36,18 @@ class ProductAPIView(APIView, LimitOffsetPagination):
             if category_name == 'null':
                   queryset = queryset.filter(category__isnull=True)
             elif category_name:
-                  queryset = queryset.filter(category__name__iexact=category_name)
+                  try:
+                        category = Category.objects.get(name=category_name)
+                        category_data = CategorySerializer(category).data
+                        def sub_category_ids(category_data):
+                              ids = [category_data['id']]
+                              for subcat in category_data['subcategories']:
+                                    ids.extend(sub_category_ids(subcat))
+                              return ids
+                        all_category_ids = sub_category_ids(category_data)
+                        queryset = queryset.filter(category__id__in=all_category_ids)
+                  except Category.DoesNotExist:
+                        queryset = queryset.none()
                   
             in_stock = request.query_params.get("stock")
             if in_stock == '0':
