@@ -34,7 +34,7 @@ class ProductSerializer(serializers.ModelSerializer):
       price = serializers.DecimalField(max_digits=10,decimal_places=2,coerce_to_string=False)
       class Meta:
             model = Product
-            fields = ('id','name','price','discounted_price','stock','active','low_stock','category','seller')
+            fields = ('id','name','price','discount','discounted_price','discount_rate','stock','active','low_stock','category','seller')
             
       def create(self, validated_data):
             validated_data['seller'] = self.context['request'].user
