@@ -192,7 +192,7 @@ class FavoritesAPIView(APIView):
             serializer = FavoritesSerializer(favorite)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
       
-      def delete(self,request,product_id):
-            fav = get_object_or_404(Favorites,user=request.user,product_id=product_id)
+      def delete(self,request,favorite_id):
+            fav = get_object_or_404(Favorites,user=request.user,id=favorite_id)
             fav.delete()
             return Response({'message':'Favorite item deleted.'},status=status.HTTP_204_NO_CONTENT)
