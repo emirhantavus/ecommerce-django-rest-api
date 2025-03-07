@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
-from .models import Product, Category
+from .models import Product, Category , Favorites
 from decimal import Decimal
 
 User = get_user_model()
@@ -52,3 +52,11 @@ class ProductSerializer(serializers.ModelSerializer):
             if obj.stock <= 5:
                   return {"low_stock":True}
             return {"low_stock":False}
+      
+
+class FavoritesSerializer(serializers.ModelSerializer):
+      product = ProductSerializer(read_only=True)
+      
+      class Meta:
+            model = Favorites
+            fields = ('id','product')

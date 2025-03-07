@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-user = get_user_model()
+User = get_user_model()
 
 class Category(models.Model):
       name = models.CharField(max_length=255, unique=True)
@@ -30,7 +30,7 @@ class Product(models.Model):
       price = models.DecimalField(max_digits=10, decimal_places=2)
       stock = models.PositiveIntegerField(null=False)
       category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, blank=True)
-      seller = models.ForeignKey(user,on_delete=models.CASCADE, related_name='products')
+      seller = models.ForeignKey(User,on_delete=models.CASCADE, related_name='products')
       image = models.ImageField(upload_to='products/')
       created_at = models.DateTimeField(auto_now_add=True)
       updated_at = models.DateTimeField(auto_now=True)
@@ -54,3 +54,14 @@ class Product(models.Model):
             
       def __str__(self):
             return f"Product name: {self.name}"
+      
+class Favorites(models.Model):
+      user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='favorites')
+      product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='favorited_by')
+      created_at = models.DateTimeField(auto_now_add=True)
+      
+      class Meta:
+            unique_together = ('user','product')
+            
+      def __str__(self):
+            return f"{self.user.mail} -- {self.product.name}"

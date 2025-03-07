@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response 
 from rest_framework import viewsets , status
-from .models import Product, Category
-from .serializers import CategorySerializer, ProductSerializer , SimpleProductSerializer
+from .models import Product, Category , Favorites
+from .serializers import CategorySerializer, ProductSerializer , SimpleProductSerializer , FavoritesSerializer
 from rest_framework.permissions import AllowAny , IsAdminUser, IsAuthenticated
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.generics import ListAPIView , RetrieveAPIView
@@ -172,3 +172,27 @@ class ProductDetailAPIView(RetrieveAPIView):
       queryset = Product.objects.all()
       serializer_class = ProductSerializer
       permission_classes = [AllowAny]
+      
+class FavoritesAPIView(APIView):
+      permission_classes = [IsAuthenticated]
+      
+      def get(self,request):
+            favs = Favorites.objects.filter(user=request.user)
+            serializer = FavoritesSerializer(favs, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+      
+      def post(self,request):
+            product_id = request.data.get("product_id")
+            product = get_object_or_404(Product, id=product_id)
+            
+            if Favorites.objects.filter(user=request.user, product=product).exists():
+                  return Response({'message':'This product is already in your favorites'},status=status.HTTP_400_BAD_REQUEST)
+            
+            favorite = Favorites.objects.create(user=request.user, product = product)
+            serializer = FavoritesSerializer(favorite)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+      
+      def delete(self,request,product_id):
+            fav = get_object_or_404(Favorites,user=request.user,product_id=product_id)
+            fav.delete()
+            return Response({'message':'Favorite item deleted.'},status=status.HTTP_204_NO_CONTENT)
