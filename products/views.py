@@ -168,10 +168,12 @@ class ProductUpdateDeleteAPIView(APIView):
             return Response({'message':'product deleted.'},status=status.HTTP_204_NO_CONTENT)
       
       
-class ProductDetailAPIView(RetrieveAPIView):
-      queryset = Product.objects.all()
-      serializer_class = ProductSerializer
+class ProductDetailAPIView(APIView):
       permission_classes = [AllowAny]
+      def get(self, request, p_id):
+            product = Product.objects.get(id=p_id)
+            serializer = ProductSerializer(product, context={'request':request})
+            return Response(serializer.data)
       
 class FavoritesAPIView(APIView):
       permission_classes = [IsAuthenticated]
