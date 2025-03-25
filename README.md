@@ -16,8 +16,8 @@ This document explains how to use the Ecommerce backend API built with **Django 
 ```json
 {
   "email": "user@gmail.com",
-  "password": "securePass123",
-  "password2": "securePass123",
+  "password": "pass12345",
+  "password2": "pass12345",
   "phone_number": "5551234567"
 }
 ```
@@ -43,7 +43,7 @@ This document explains how to use the Ecommerce backend API built with **Django 
 ```json
 {
   "email": "user@gmail.com",
-  "password": "securePass123"
+  "password": "deneme123"
 }
 ```
 
@@ -99,8 +99,8 @@ Authorization: Token YOUR_TOKEN
 {
   "email": "user@gmail.com",
   "role": "seller",
-  "seller_name": "John Doe",
-  "company_name": "Doe Company"
+  "seller_name": "User1",
+  "company_name": "Company1"
 }
 ```
 
@@ -121,8 +121,8 @@ Authorization: Token YOUR_TOKEN
 
 ```json
 {
-  "seller_name": "New Seller Name",
-  "company_name": "New Company LLC"
+  "seller_name": "Seller Name",
+  "company_name": "Company Name"
 }
 ```
 
@@ -132,8 +132,8 @@ Authorization: Token YOUR_TOKEN
 {
   "email": "user@gmail.com",
   "role": "seller",
-  "seller_name": "New Seller Name",
-  "company_name": "New Company LLC"
+  "seller_name": "Seller Name",
+  "company_name": "Company Name"
 }
 ```
 
