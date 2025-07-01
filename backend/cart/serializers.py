@@ -8,7 +8,15 @@ class CartItemSerializer(serializers.ModelSerializer):
       product_price = serializers.ReadOnlyField(source='product.discount_price')
       product_image = serializers.ImageField(source='product.image',read_only=True)
       product_stock = serializers.IntegerField(source='product.stock',read_only=True)
+      
       class Meta:
             model = CartItem
-            fields = ('product','product_name','product_price',
-                      'product_stock','quantity','total_price','added_at','product_image')
+            fields = ('id','product','product_name','product_price',
+                      'product_stock','quantity','total_price',
+                      'added_at','product_image'
+                      )
+            
+            read_only_fields = [
+            'id', 'product_name', 'product_price', 'product_stock',
+            'total_price', 'added_at', 'product_image'
+            ]
