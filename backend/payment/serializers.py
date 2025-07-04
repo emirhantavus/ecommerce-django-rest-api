@@ -1,12 +1,18 @@
 from rest_framework import serializers
 from .models import Payment
 from order.models import Order
+from rest_framework.exceptions import PermissionDenied
 
 class PaymentSerializer(serializers.ModelSerializer):
       class Meta:
             model = Payment
             fields = ('id','user','order','status','transaction_id','created_at')
             read_only_fields = ('user','amount', 'transaction_id','created_at')
+            
+      def validate_transaction_id(self, obj):
+            if Payment.objects.filter(transaction_id=obj).exists():
+                  raise serializers.ValidationError('Transaction ID already exists')
+            return obj
             
       def create(self, validated_data):
             user = self.context['request'].user
@@ -24,6 +30,9 @@ class PaymentSerializer(serializers.ModelSerializer):
             ##Also transaction_id with using uuid
             import uuid
             transaction_id = str(uuid.uuid4())
+            
+            if order.user != self.context['request'].user:
+                  raise PermissionDenied('You can only pay for your own orders.')
             
             payment = Payment.objects.create(
                   user=user,
