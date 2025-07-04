@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from order.models import Order
 from .serializers import PaymentSerializer
+from .models import Payment
 
 User = get_user_model()
 
@@ -22,3 +23,8 @@ class PaymentAPIView(APIView):
                         'transaction_id': payment.transaction_id
                         }, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+      
+      def get(self, request):
+            payments = Payment.objects.filter(user=request.user).order_by('-created_at')
+            serializer = PaymentSerializer(payments, many=True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
