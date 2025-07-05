@@ -45,7 +45,6 @@ class ProfileIntegrationTest(TestCase):
                   'company_name':'cc_name',
             }
             import json
-            print(f"Before editing: {profile_response.data}")
             profile_edit_response = self.client.put(
                   profile_url,
                   data=json.dumps(profile_data),
@@ -55,4 +54,3 @@ class ProfileIntegrationTest(TestCase):
             self.assertEqual(profile_edit_response.status_code, 200)
             self.assertEqual(profile_edit_response.data['seller_name'], 'ss_name')
             self.assertEqual(profile_edit_response.data['company_name'], 'cc_name')
-            print(f"After editing: {profile_edit_response.data}")

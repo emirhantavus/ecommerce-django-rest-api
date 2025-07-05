@@ -55,11 +55,13 @@ class PaymentIntegrationTestCase(APITestCase):
             response = self.client.get(self.order_url)
             self.assertEqual(response.status_code, 200) #GET order status 'paid'
             
-            order_status = response.data[0]['status']
             
             if payment_status: # We check here if payment status is True, then Order status is 'paid'
-                  self.assertEqual(order_status, 'paid')
+                  #SUCCESS PAYMENT
                   self.assertEqual(len(response.data), 1)
+                  order_status = response.data[0]['status']
+                  self.assertEqual(order_status, 'paid')
             else:
-                  self.assertEqual(order_status, 'failed')
                   self.assertEqual(len(response.data), 0)
+                  order = Order.objects.get(id= order_id)
+                  self.assertEqual(order.status, 'failed')

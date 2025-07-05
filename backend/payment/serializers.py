@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Payment
 from order.models import Order
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 
 class PaymentSerializer(serializers.ModelSerializer):
       class Meta:
@@ -9,6 +9,12 @@ class PaymentSerializer(serializers.ModelSerializer):
             fields = ('id','user','order','status','transaction_id','created_at')
             read_only_fields = ('user','amount', 'transaction_id','created_at')
             
+      def validate(self, data):
+            for item in data['order'].order_items.all():
+                  if item.product.stock < item.quantity:
+                        raise ValidationError(f"Not enough stock for {item.product.name} ")
+            return data 
+                              
       def validate_transaction_id(self, obj):
             if Payment.objects.filter(transaction_id=obj).exists():
                   raise serializers.ValidationError('Transaction ID already exists')
@@ -42,9 +48,13 @@ class PaymentSerializer(serializers.ModelSerializer):
                   order=order
                   )
             
-            ## we change order's status here
+            ## we change order's status here and product's stock info
             if status:
                   payment.order.status = 'paid'
+                  for item in payment.order.order_items.all():
+                       item.product.stock -= item.quantity
+                       item.product.save()
+                  
             else:
                   payment.order.status = 'failed'
             payment.order.save()

@@ -55,7 +55,6 @@ class ProfileTestCase(TestCase):
                   data=json.dumps(update_data),
                   content_type="application/json"
             )
-            print(response.data)
             self.assertEqual(response.status_code,200)
             self.assertEqual(response.data['seller_name'],'xx_name')
             self.assertEqual(response.data['company_name'],'yy_company')
