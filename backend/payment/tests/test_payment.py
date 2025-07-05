@@ -76,8 +76,7 @@ class PaymentTestCase(APITestCase):
             if response.data['status'] is True or response.data['status'] == True:
                   self.assertEqual(order.status, 'paid')
             else:
-                  self.assertEqual(order.status, 'pending') #maybe later we change it as 'failed'
-            #we have fail here, after updating order codes it will work.
+                  self.assertEqual(order.status, 'failed')  #It works.
             
       def test_list_payments_no_auth(self):
             response = self.client.get(self.payment_url)

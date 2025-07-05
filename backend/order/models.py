@@ -12,6 +12,7 @@ class Order(models.Model):
             ('shipped', 'Shipped'),
             ('delivered', 'Delivered'),
             ('cancelled', 'Cancelled'),
+            ('failed','Failed')
       ]
       user = models.ForeignKey(User, on_delete=models.CASCADE)
       address = models.CharField(max_length=512, null=False)

@@ -42,4 +42,11 @@ class PaymentSerializer(serializers.ModelSerializer):
                   order=order
                   )
             
+            ## we change order's status here
+            if status:
+                  payment.order.status = 'paid'
+            else:
+                  payment.order.status = 'failed'
+            payment.order.save()
+            
             return payment

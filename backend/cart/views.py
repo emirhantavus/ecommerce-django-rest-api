@@ -25,7 +25,7 @@ class CartItemCreateListAPIView(APIView):
             if serializer.is_valid():
                   serializer.save(user=request.user)
                   return Response({'message':'Product added to cart successfuly'},status.HTTP_201_CREATED)
-            return Response(serializer.errors)
+            return Response(serializer.errors,status.HTTP_400_BAD_REQUEST)
       
 class CartItemRetrieveOrDestroyAPIView(APIView):
       permission_classes = [IsAuthenticated]

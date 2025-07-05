@@ -10,7 +10,7 @@ class OrderAPIView(APIView):
       permission_classes = [IsAuthenticated]
       
       def get(self, request):
-            order = Order.objects.all()
+            order = Order.objects.filter(user=request.user, status='paid')
             serializer = OrderSerializer(order, many=True)
             return Response(serializer.data,status.HTTP_200_OK)
       
