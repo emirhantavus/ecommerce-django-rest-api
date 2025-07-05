@@ -1,5 +1,6 @@
 from .models import CartItem
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 
 class CartItemSerializer(serializers.ModelSerializer):
@@ -20,3 +21,20 @@ class CartItemSerializer(serializers.ModelSerializer):
             'id', 'product_name', 'product_price', 'product_stock',
             'total_price', 'added_at', 'product_image'
             ]
+            
+      def validate(self, data):
+            product = data.get('product') or getattr(self.instance, 'product', None)
+            quantity = data.get('quantity') or getattr(self.instance, 'quantity', None)
+            
+            if product is None:
+                  raise ValidationError('Product must be set')
+            
+            if quantity is None:
+                  quantity = 1
+            
+            if product.stock == 0:
+                  raise ValidationError('This product is out of stock')
+            if product.stock < quantity:
+                  raise ValidationError(f"Only {data['product'].stock} left in stock, but you requested {data['quantity']}.")
+            
+            return data
