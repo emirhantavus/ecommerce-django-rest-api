@@ -12,7 +12,7 @@ class ProductListTestCase(APITestCase):
             self.product_one = Product.objects.create(name="test product",price=100,stock=5,seller=self.seller)
             self.product_two = Product.objects.create(name="test product 2",price=10000,stock=10,seller=self.seller)
             self.product_all_url = reverse('products')
-            self.product_pk_url = reverse('product-detail',kwargs={'pk':self.product_two.id})
+            self.product_pk_url = reverse('product-detail',kwargs={'p_id':self.product_two.id})
             
       def test_get_all_products(self):
             response = self.client.get(self.product_all_url)

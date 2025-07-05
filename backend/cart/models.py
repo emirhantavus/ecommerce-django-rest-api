@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from products.models import Product
 
+###### Bad design for now, later I may add cart and cartItem models. It works now but, create cart everytime.
+
 User = get_user_model()
 class CartItem(models.Model):
       user = models.ForeignKey(User, on_delete=models.CASCADE,null=False,blank=False)

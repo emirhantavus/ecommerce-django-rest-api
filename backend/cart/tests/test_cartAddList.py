@@ -20,13 +20,13 @@ class CartTestCase(APITestCase):
             self.client.force_authenticate(user= self.customer)
             response = self.client.get(self.cart_url)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data), 0) # empty list with auth
+            self.assertEqual(len(response.data['items']), 0) # empty list with auth
             
       def test_add_to_cart(self):
             self.client.force_authenticate(user= self.customer)
             response = self.client.get(self.cart_url)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data), 0)
+            self.assertEqual(len(response.data['items']), 0)
             ## we add item then.
             data = {
                   'product': self.product.id,
@@ -37,6 +37,6 @@ class CartTestCase(APITestCase):
             ## we control again (get method for carts)
             response = self.client.get(self.cart_url)
             self.assertEqual(response.status_code,200)
-            self.assertEqual(len(response.data), 1)
-            self.assertEqual(response.data[0]['product_name'],self.product.name)
-            self.assertEqual(response.data[0]['quantity'], 2)
+            self.assertEqual(len(response.data['items']), 1)
+            self.assertEqual(response.data['items'][0]['product_name'],self.product.name)
+            self.assertEqual(response.data['items'][0]['quantity'], 2)

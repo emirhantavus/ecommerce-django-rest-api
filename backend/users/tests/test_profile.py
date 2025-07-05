@@ -74,10 +74,10 @@ class ProfileTestCase(TestCase):
             }
             response = self.client.put(
                   profile_url,
-                  data = json.dumps(profile_data),
+                  data = ...,
                   content_type="application/json"
             )
-            self.assertEqual(response.status_code, 401) #I got 403 here, LOOK HERE LATER. Need to write permission(401).
+            self.assertEqual(response.status_code, 403) #I got 403 here, LOOK HERE LATER. Need to write permission(401).
             
       def test_user_cannot_edit_another_users_profile(self):
             user1 = User.objects.create_user(

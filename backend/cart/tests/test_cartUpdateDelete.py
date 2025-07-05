@@ -22,7 +22,7 @@ class CartTestCase(APITestCase):
             self.assertEqual(response.status_code,201)
             response = self.client.get(self.cart_ls_url)
             self.client.logout()# logout here, we authenticate for adding item to cart
-            response = self.client.delete(reverse('cart-update-delete', kwargs={'id':response.data[0]['id']}))
+            response = self.client.delete(reverse('cart-update-delete', kwargs={'id':response.data['items'][0]['id']}))
             self.assertEqual(response.status_code, 401) # we get 401 error
             
       def test_delete_cart_item_with_authentication(self):
@@ -35,17 +35,19 @@ class CartTestCase(APITestCase):
             self.assertEqual(response.status_code,201)
             response = self.client.get(self.cart_ls_url)
             self.assertEqual(response.status_code,200)
-            self.assertEqual(len(response.data), 1)
-            cart_item_id = response.data[0]['id'] #we get item id here.
+            self.assertEqual(len(response.data['items']), 1)
+            cart_item_id = response.data['items'][0]['id'] #we get item id here.
             url = reverse('cart-update-delete', kwargs={'id':cart_item_id})
             response = self.client.delete(url)
             self.assertEqual(response.status_code, 204) # if 204 then ok we deleted it.
+            response = self.client.get(self.cart_ls_url)
+            self.assertEqual(len(response.data['items']),0)
             
       def test_add_to_cart(self):
             self.client.force_authenticate(user= self.customer)
             response = self.client.get(self.cart_ls_url)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data), 0)
+            self.assertEqual(len(response.data['items']), 0)
             ## add item
             data = {
                   'product': self.product.id,
@@ -54,8 +56,8 @@ class CartTestCase(APITestCase):
             response = self.client.post(self.cart_ls_url,data=data)
             self.assertEqual(response.status_code,201)
             response = self.client.get(self.cart_ls_url)
-            cart_id = response.data[0]['id']
-            self.assertEqual(response.data[0]['quantity'],2)
+            cart_id = response.data['items'][0]['id']
+            self.assertEqual(response.data['items'][0]['quantity'],2)
             ## update item
             update_url = reverse('cart-update-delete', kwargs={'id':cart_id})
             new_Data = {
@@ -65,4 +67,4 @@ class CartTestCase(APITestCase):
             self.assertEqual(response.status_code, 200)
             #we check here quantity
             response = self.client.get(self.cart_ls_url)
-            self.assertEqual(response.data[0]['quantity'],5)
+            self.assertEqual(response.data['items'][0]['quantity'],5)
