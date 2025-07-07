@@ -7,7 +7,7 @@ from products.models import Product
 
 User = get_user_model()
 
-class OrderTest(APITestCase):
+class OrderStatusTest(APITestCase):
       def setUp(self):
             self.seller = User.objects.create_user(email="seller@gmail.com", password="passw0rd", role="seller")
             self.diff_seller = User.objects.create_user(email="diffseller@gmail.com", password="passw0rd", role="seller")
