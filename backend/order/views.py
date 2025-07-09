@@ -4,8 +4,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Order, OrderItem
-from .serializers import OrderSerializer
+from .serializers import OrderSerializer, ReturnRequestSerializer
 from .permissions import IsCustomer, IsSellerOrAdmin
+from django.shortcuts import get_object_or_404
 
 class OrderAPIView(APIView):
       permission_classes = [IsAuthenticated]
@@ -76,3 +77,72 @@ class CancelOrderAPIView(APIView):
             order.status = 'cancelled'
             order.save()
             return Response(OrderSerializer(order).data, status=200)
+      
+class RequestReturnAPIView(APIView):
+      permission_classes = [IsCustomer]
+      
+      def post(self,request,item_id):
+            item = get_object_or_404(OrderItem, id=item_id, order__user=request.user)
+            
+            if item.order.status != 'delivered':
+                  return Response({'error':'Only delivered items can be returned or exchanged'}, status=400)
+            
+            if item.return_status != 'none':
+                  return Response({'error':'Return or exchange already requeted for this item.'},status=400)
+            
+            serializer = ReturnRequestSerializer(item, data=request.data, partial=True)
+            if serializer.is_valid():
+                  serializer.save(return_status='requested')
+                  return Response(serializer.data, status=200)
+            else:
+                  return Response(serializer.errors, status=400)
+            
+      def get(self,request, item_id):
+            item = get_object_or_404(OrderItem, id=item_id, order__user=request.user)
+            serializer = ReturnRequestSerializer(item)
+            return Response(serializer.data, status=200)
+      
+class ListReturnRequestsAPIView(APIView):
+      permission_classes = [IsCustomer]
+      
+      def get(self,request):
+            items = OrderItem.objects.filter(
+                  order__user=request.user).exclude(return_status='none').order_by('-order__created_at')
+            serializer = ReturnRequestSerializer(items, many=True)#serializer kısmını sonra genisleticez unutma.
+            return Response(serializer.data,status=200)
+      
+class ListReturnRequestsSellerAPIView(APIView):
+      permission_classes = [IsSellerOrAdmin]
+      
+      def get(self, request):
+            items = OrderItem.objects.filter(product__seller=request.user,return_status='requested')
+            serializer = ReturnRequestSerializer(items, many=True)
+            return Response(serializer.data,status=200)
+      
+class ProcessReturnRequestsSellerAPIView(APIView):
+      permission_classes = [IsSellerOrAdmin]
+      
+      def post(self,request,item_id):
+            item = get_object_or_404(OrderItem, id=item_id, product__seller=request.user, return_request='requested')
+            action = request.data.get('action')
+            
+            if action == 'approve':
+                  item.return_status = 'approved'
+                  if item.return_type == 'refund':
+                        item.product.stock += item.quantity
+                        item.product.save()
+                  item.save()
+                  serializer = ReturnRequestSerializer(item)
+                  return Response(serializer.data, status=200)
+            
+            elif action == 'reject':
+                  item.return_status = 'rejected'
+                  reject_reason = request.data.get('reject_reason','')
+                  if hasattr(item, 'reject_reason'):
+                        item.reject_reason = reject_reason
+                  item.save()
+                  serializer = ReturnRequestSerializer(item)
+                  return Response(serializer.data,status=200)
+            
+            else:
+                  return Response({'error':'Invalid action'},status=400)

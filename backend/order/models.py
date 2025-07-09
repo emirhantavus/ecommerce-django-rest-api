@@ -33,5 +33,22 @@ class OrderItem(models.Model):
       quantity = models.PositiveIntegerField()
       price = models.DecimalField(max_digits=10, decimal_places=2)
       
+      RETURN_STATUS_CHOICES = [
+            ('none', 'No Return'),
+            ('requested', 'Return Requested'),
+            ('approved', 'Return Approved'),
+            ('rejected', 'Return Rejected'),
+            ('completed', 'Return Completed'),
+      ]
+      RETURN_TYPE_CHOICES = [
+            ('refund', 'Refund'),
+            ('exchange', 'Exchange'),
+      ]
+      
+      return_status = models.CharField(max_length=30, choices=RETURN_STATUS_CHOICES,default='none')
+      return_type = models.CharField(max_length=20, choices=RETURN_TYPE_CHOICES, blank=True, null=True)
+      return_reason = models.TextField(max_length=1024,blank=True, null=True)
+      return_image = models.ImageField(upload_to='returns/',blank=True, null=True) # maybe it's unnecessary
+      
       def __str__(self):
-            return f"{self.product.name} -- {self.quantity} -- {self.price}"
+            return f"{self.product.name} -- {self.quantity} -- {self.price} -- {self.return_status}"
