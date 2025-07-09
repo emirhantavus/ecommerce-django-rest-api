@@ -12,7 +12,11 @@ class Order(models.Model):
             ('shipped', 'Shipped'),
             ('delivered', 'Delivered'),
             ('cancelled', 'Cancelled'),
-            ('failed','Failed')
+            ('failed','Failed'),
+            #### for refund product or products.
+            ('return_requested','Return Requested'),
+            ('returned', 'Returned'),
+            ('refund_rejected', 'Refund Rejected'),
       ]
       user = models.ForeignKey(User, on_delete=models.CASCADE)
       address = models.CharField(max_length=512, null=False)

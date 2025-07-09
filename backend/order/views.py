@@ -46,6 +46,12 @@ class UpdateOrderStatusAPIView(APIView):
             if new_status not in valid_status:
                   return Response({'error':'Invalid status'},status.HTTP_400_BAD_REQUEST)
             
+            #update stock restore
+            if new_status == 'cancelled':
+                  for item in order.order_items.all():
+                        item.product.stock += item.quantity
+                        item.product.save()
+            
             order.status = new_status #for seller or admin.
             order.save()
             return Response(OrderSerializer(order).data, status=status.HTTP_200_OK) 
@@ -61,6 +67,11 @@ class CancelOrderAPIView(APIView):
             
             if order.status not in ['pending','paid']:
                   return Response({'error': 'Order cannot be cancelled at this stage.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            #update stock restore
+            for item in order.order_items.all():
+                  item.product.stock += item.quantity
+                  item.product.save()
             
             order.status = 'cancelled'
             order.save()

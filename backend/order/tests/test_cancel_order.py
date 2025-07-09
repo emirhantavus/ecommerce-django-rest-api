@@ -14,7 +14,7 @@ class CancelOrderTest(APITestCase):
             self.seller = User.objects.create_user(email="seller@gmail.com", password="passw0rd", role="seller")
             self.product = Product.objects.create(name="product", price=100, stock=5, seller=self.seller)
             self.order = Order.objects.create(user=self.customer, address="adres", total_price=100, status='pending')
-            self.order_item = OrderItem.objects.create(order=self.order, product=self.product, quantity=5, price=100)
+            self.order_item = OrderItem.objects.create(order=self.order, product=self.product, quantity=2, price=100)
             
             self.cancel_url = reverse('cancel-order', args=[self.order.id])
             
@@ -48,3 +48,15 @@ class CancelOrderTest(APITestCase):
             self.client.force_authenticate(user=self.customer)
             response = self.client.post(url)
             self.assertEqual(response.status_code, 404)
+            
+            
+      def test_cancel_returns_stock(self):
+            print(self.product.stock)
+            old_stock = self.product.stock
+            self.client.force_authenticate(user=self.customer)
+            response = self.client.post(self.cancel_url)
+            self.assertEqual(response.status_code, 200)
+            self.product.refresh_from_db()
+            print(self.order_item.quantity)
+            self.assertEqual(self.product.stock, old_stock + self.order_item.quantity)
+            print(self.product.stock) # it works
