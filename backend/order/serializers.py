@@ -45,7 +45,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class ReturnRequestSerializer(serializers.ModelSerializer):
       class Meta:
             model = OrderItem
-            fields = ('return_type','return_reason','return_image')
+            fields = ('id','return_type','return_reason','return_image')
             extra_kwargs = {
                   'return_type': {'required':True},
                   'return_reason': {'required':True},
