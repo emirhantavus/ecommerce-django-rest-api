@@ -123,7 +123,7 @@ class ProcessReturnRequestsSellerAPIView(APIView):
       permission_classes = [IsSellerOrAdmin]
       
       def post(self,request,item_id):
-            item = get_object_or_404(OrderItem, id=item_id, product__seller=request.user, return_request='requested')
+            item = get_object_or_404(OrderItem, id=item_id, product__seller=request.user, return_status='requested')
             action = request.data.get('action')
             
             if action == 'approve':
