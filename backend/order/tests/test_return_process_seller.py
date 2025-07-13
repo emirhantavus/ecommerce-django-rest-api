@@ -3,6 +3,7 @@ from django.urls import reverse
 from order.models import Order, OrderItem
 from django.contrib.auth import get_user_model
 from products.models import Product
+from notifications.models import Notification
 
 User = get_user_model()
 
@@ -54,6 +55,9 @@ class SellerReturnProcessTest(APITestCase):
             self.assertEqual(response.status_code, 200)
             self.order_item.refresh_from_db()
             self.assertEqual(self.order_item.return_status, 'approved')
+            
+            notification = Notification.objects.filter(user=self.customer, subject__icontains="Approved").first()
+            self.assertIsNotNone(notification)
 
       def test_seller_can_reject_return_request(self):
             self.client.force_authenticate(user=self.seller)
@@ -64,6 +68,9 @@ class SellerReturnProcessTest(APITestCase):
             self.assertEqual(response.status_code, 200)
             self.order_item.refresh_from_db()
             self.assertEqual(self.order_item.return_status, 'rejected')
+            
+            notification = Notification.objects.filter(user=self.customer, subject__icontains="Rejected").first()
+            self.assertIsNotNone(notification)
 
       def test_seller_cannot_process_another_sellers_request(self):
             self.client.force_authenticate(user=self.other_seller)

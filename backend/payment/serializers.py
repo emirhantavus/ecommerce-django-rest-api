@@ -84,6 +84,18 @@ class PaymentSerializer(serializers.ModelSerializer):
                   
             else:
                   payment.order.status = 'failed'
+                  # Fail mail for customer 
+                  
+                  send_notification_and_email(
+                        user=payment.order.user,
+                        subject='Your Order Has Been Failed!',
+                        message=(
+                              f"Dear {payment.order.user.first_name},\n\n"
+                              "Your order has been failed. Please try again."
+                        ),
+                        notification_type='email'
+                  )
+                  
             payment.order.save()
             
             return payment

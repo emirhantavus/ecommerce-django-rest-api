@@ -4,6 +4,7 @@ from order.models import Order, OrderItem
 from cart.models import CartItem
 from django.contrib.auth import get_user_model
 from products.models import Product
+from notifications.models import Notification
 
 User = get_user_model()
 
@@ -27,6 +28,9 @@ class OrderStatusTest(APITestCase):
             self.assertEqual(response.status_code, 200)
             self.order.refresh_from_db()
             self.assertEqual(self.order.status, 'shipped')
+            
+            notification = Notification.objects.filter(user=self.customer, subject__icontains="shipped").first()
+            self.assertIsNotNone(notification)
             
       def test_seller_cannot_update_other_seller_status(self):
             self.client.force_authenticate(user=self.diff_seller)
@@ -75,3 +79,6 @@ class OrderStatusTest(APITestCase):
             self.assertEqual(self.product.stock, old_stock + self.order_item.quantity)
             print(self.order_item.quantity)
             print(self.product.stock)
+            
+            notification = Notification.objects.filter(user=self.customer, subject__icontains="cancelled").first()
+            self.assertIsNotNone(notification)

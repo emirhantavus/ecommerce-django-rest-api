@@ -3,6 +3,7 @@ from django.urls import reverse
 from order.models import Order, OrderItem
 from django.contrib.auth import get_user_model
 from products.models import Product
+from notifications.models import Notification
 
 User = get_user_model()
 
@@ -33,6 +34,11 @@ class CustomerReturnRequestTest(APITestCase):
             self.assertEqual(response.status_code, 200)
             self.order_item.refresh_from_db()
             self.assertEqual(self.order_item.return_status, 'requested')
+            
+            notification_customer = Notification.objects.filter(user=self.customer, subject__icontains="Return/Exchange").first()
+            notification_seller = Notification.objects.filter(user=self.seller, subject__icontains="Return/Exchange").first()
+            self.assertIsNotNone(notification_customer)
+            self.assertIsNotNone(notification_seller)
             
       def test_customer_cannot_request_return_undelivered_item(self):
             self.client.force_authenticate(user=self.other_customer)

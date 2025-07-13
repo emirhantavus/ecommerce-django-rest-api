@@ -4,7 +4,7 @@ import logging
 
 def send_notification_and_email(user, subject, message, status='pending',notification_type='email'):
       try:
-            result = send_order_email.delay(subject=subject,message=message,user=user.email)
+            result = send_order_email.delay(subject=subject,message=message,to_email=user.email)
             task_id = result.id
 
             notification = Notification.objects.create(

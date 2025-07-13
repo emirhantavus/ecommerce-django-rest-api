@@ -7,6 +7,7 @@ from .models import Order, OrderItem
 from .serializers import OrderSerializer, ReturnRequestSerializer
 from .permissions import IsCustomer, IsSellerOrAdmin
 from django.shortcuts import get_object_or_404
+from ecommerce.utils.notifications import send_notification_and_email
 
 class OrderAPIView(APIView):
       permission_classes = [IsAuthenticated]
@@ -52,6 +53,38 @@ class UpdateOrderStatusAPIView(APIView):
                   for item in order.order_items.all():
                         item.product.stock += item.quantity
                         item.product.save()
+                  #send mail here for info
+                  send_notification_and_email(
+                        user=order.user,
+                        subject='Order Cancelled',
+                        message=(
+                              f"Dear {order.user.first_name},\n\n"
+                              f"Your order (ID: {order.id}) has been cancelled."
+                        ),
+                        notification_type='email'
+                  )
+                  
+            elif new_status == 'shipped':
+                  send_notification_and_email(
+                        user=order.user,
+                        subject='Order Shipped!',
+                        message=(
+                            f"Dear {order.user.first_name},\n\n"
+                            f"Your order (ID: {order.id}) has been shipped."
+                        ),
+                        notification_type='email'
+                  )
+            
+            elif new_status == 'delivered':
+                  send_notification_and_email(
+                        user=order.user,
+                        subject='Order Delivered!',
+                        message=(
+                            f"Dear {order.user.first_name},\n\n"
+                            f"Your order (ID: {order.id}) has been delivered."
+                        ),
+                        notification_type='email'
+                  )
             
             order.status = new_status #for seller or admin.
             order.save()
@@ -74,6 +107,16 @@ class CancelOrderAPIView(APIView):
                   item.product.stock += item.quantity
                   item.product.save()
             
+            send_notification_and_email(
+                  user=request.user,
+                  subject='Cancel Request',
+                  message=(
+                        f"Dear {order.user.first_name}"
+                        f"Your cancellation request for order ({order.id}) has been recieved."
+                  ),
+                  notification_type='email'
+            )
+            
             order.status = 'cancelled'
             order.save()
             return Response(OrderSerializer(order).data, status=200)
@@ -93,6 +136,24 @@ class RequestReturnAPIView(APIView):
             serializer = ReturnRequestSerializer(item, data=request.data, partial=True)
             if serializer.is_valid():
                   serializer.save(return_status='requested')
+                  #user notification
+                  send_notification_and_email(
+                        user=request.user,
+                        subject='Return/Exchange Request Received',
+                        message=f"Dear {item.order.user.first_name}, Return/Exchange Request Received for {item.product.name}",
+                        notification_type='email'
+                  )
+                  # Seller notification
+                  send_notification_and_email(
+                      user=item.product.seller,
+                      subject='New Return/Exchange Request',
+                      message=(
+                            f"Dear {item.product.seller.profile.seller_name}" # hata alırsam buraya bak !
+                            f"Return/Exchange Request Received for your product {item.product.name}"
+                            ),
+                      notification_type='email'
+                  )
+                  
                   return Response(serializer.data, status=200)
             else:
                   return Response(serializer.errors, status=400)
@@ -132,6 +193,14 @@ class ProcessReturnRequestsSellerAPIView(APIView):
                         item.product.stock += item.quantity
                         item.product.save()
                   item.save()
+                  send_notification_and_email(
+                        user=item.order.user,
+                        subject='Your Return Request is Approved',
+                        message=(
+                              f"Dear {item.order.user.first_name}, \n\n"
+                              f"Your return request for product {item.product.name} has been approved."),
+                        notification_type='email' 
+                  )
                   serializer = ReturnRequestSerializer(item)
                   return Response(serializer.data, status=200)
             
@@ -141,6 +210,18 @@ class ProcessReturnRequestsSellerAPIView(APIView):
                   if hasattr(item, 'reject_reason'):
                         item.reject_reason = reject_reason
                   item.save()
+                  
+                  send_notification_and_email(
+                        user=item.order.user,
+                        subject='Your Return Request is Rejected',
+                        message=(
+                              f"Dear {item.order.user.first_name}, \n\n"
+                              f"Your return request for product {item.product.name} has been rejected."
+                              f"Reason: {reject_reason}."
+                              ),
+                        notification_type='email' 
+                  )
+                  
                   serializer = ReturnRequestSerializer(item)
                   return Response(serializer.data,status=200)
             

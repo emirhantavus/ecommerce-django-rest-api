@@ -25,6 +25,13 @@ class CancelOrderTest(APITestCase):
             self.order.refresh_from_db()
             self.assertEqual(self.order.status, 'cancelled')
             
+            ## Notification test for cancel
+            from notifications.models import Notification
+            notification = Notification.objects.filter(user=self.customer, subject__icontains='Cancel').first()
+            self.assertIsNotNone(notification)
+            
+            #It works. I checked tasks on celery flower. DONE !
+            
       def test_customer_cannot_cancel_others_order(self):
             self.client.force_authenticate(user=self.another_customer)
             response = self.client.post(self.cancel_url)
