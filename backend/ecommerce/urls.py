@@ -8,5 +8,6 @@ urlpatterns = [
     path('api/cart/',include('cart.urls')),
     path('api/order/',include('order.urls')),
     path('api/payment/',include('payment.urls')),
+    path('api/notifications/',include('notifications.urls')),
     path('silk/',include('silk.urls',namespace='silk')),
 ]

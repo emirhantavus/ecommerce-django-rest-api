@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Payment
 from order.models import Order
 from rest_framework.exceptions import PermissionDenied, ValidationError
+from ecommerce.utils.notifications import send_notification_and_email
 
 class PaymentSerializer(serializers.ModelSerializer):
       class Meta:
@@ -54,6 +55,32 @@ class PaymentSerializer(serializers.ModelSerializer):
                   for item in payment.order.order_items.all():
                        item.product.stock -= item.quantity
                        item.product.save()
+                  
+                  ## we send notification here. For customers.
+                  send_notification_and_email(
+                        user=payment.order.user,
+                        subject='Your Order Has Been Recieved!',
+                        message=(
+                              f"Dear {payment.order.user.first_name},\n\n"
+                              f"Your order (ID: {payment.order.id}) has been successfuly placed."
+                              "You can track your order status on your profile.\n\n"
+                              "Thank you for shopping with us."
+                        ),
+                        notification_type='email'
+                  )
+                  
+                  ## For sellers
+                  for item in payment.order.order_items.all():
+                        send_notification_and_email(
+                              user=item.product.seller,
+                              subject="New Order Received!",
+                              message= (
+                                    f"You have recieved a new order for your product '{item.product.name}' \n\n"
+                                    f"(Quantity: {item.quantity}). \n\n"
+                                    f"Please check your seller panel for details."
+                              ),
+                              notification_type='email'
+                        )
                   
             else:
                   payment.order.status = 'failed'
