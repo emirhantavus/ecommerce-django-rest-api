@@ -52,3 +52,37 @@ class ReturnRequestSerializer(serializers.ModelSerializer):
                   'return_image': {'required':False}
             }
             
+            
+class OrderHistoryCustomerSerializer(serializers.ModelSerializer):
+      items = OrderItemSerializer(many=True, read_only=True, source='order_items')
+      class Meta:
+            model = Order
+            fields = ('id','address','created_at','total_price','items')
+            read_only_fields = ('id', 'created_at', 'total_price','status')
+            
+            
+class OrderHistorySellerSerializer(serializers.ModelSerializer):
+      buyer = serializers.SerializerMethodField()
+      order_id = serializers.IntegerField(source='order.id', read_only=True)
+      order_status = serializers.CharField(source='order.status', read_only=True)
+      order_date = serializers.DateTimeField(source='order.created_at', read_only=True)
+      product_name = serializers.CharField(source='product.name', read_only=True)
+      product_price = serializers.DecimalField(source='product.price', read_only=True, max_digits=10, decimal_places=2)
+      item_total_price = serializers.SerializerMethodField()
+      
+      class Meta:
+            model = OrderItem
+            fields = (
+                  'id','order_id','order_date','order_status','product_name','product_price','quantity','item_total_price','buyer'
+                  )
+            
+      def get_buyer(self,data):
+            user = data.order.user
+            return {
+                  'id':user.id,
+                  'name':f"{user.first_name} {user.last_name}",
+                  'email':user.email
+            }
+      
+      def get_item_total_price(self,data):
+            return data.quantity * data.product.price

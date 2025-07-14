@@ -4,7 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Order, OrderItem
-from .serializers import OrderSerializer, ReturnRequestSerializer
+from .serializers import (OrderSerializer, ReturnRequestSerializer,
+                          OrderHistoryCustomerSerializer, OrderHistorySellerSerializer)
 from .permissions import IsCustomer, IsSellerOrAdmin
 from django.shortcuts import get_object_or_404
 from ecommerce.utils.notifications import send_notification_and_email
@@ -15,7 +16,7 @@ class OrderAPIView(APIView):
       def get(self, request):
             order = Order.objects.filter(user=request.user, status='paid')
             serializer = OrderSerializer(order, many=True)
-            return Response(serializer.data,status.HTTP_200_OK)
+            return Response(serializer.data,status.HTTP_200_OK) #Unnecessary here !!
       
       def post(self, request):
             serializer = OrderSerializer(data=request.data, context={'request':request})
@@ -227,3 +228,40 @@ class ProcessReturnRequestsSellerAPIView(APIView):
             
             else:
                   return Response({'error':'Invalid action'},status=400)
+            
+            
+class OrderHistoryListAPIView(APIView):
+      permission_classes = [IsCustomer]
+      
+      def get(self,request):
+            orders = Order.objects.filter(user=request.user,status__in=['delivered','cancelled'])
+            serializer = OrderHistoryCustomerSerializer(orders,many=True)
+            return Response(serializer.data,status=200)
+      
+      
+class OrderHistoryDetailAPIView(APIView):
+      permission_classes = [IsCustomer]
+      
+      def get(self,request,o_id):
+            order = get_object_or_404(Order,user=request.user,id=o_id)
+            serializer = OrderHistoryCustomerSerializer(order)
+            return Response(serializer.data,status=200)
+      
+class OrderHistorySellerAPIView(APIView):
+      permission_classes = [IsSellerOrAdmin]
+      
+      def get(self,request):
+            items = OrderItem.objects.filter(product__seller=request.user).order_by('-order__created_at')
+            serializer = OrderHistorySellerSerializer(items, many=True)
+            return Response(serializer.data,status=200)
+      
+class ActiveOrderListAPIView(APIView):
+      permission_classes = [IsCustomer]
+      
+      def get(self,request):
+            orders = Order.objects.filter(
+                  user=request.user,
+                  status__in=['pending','paid','shipped']
+            ).order_by('-created_at')
+            serializer = OrderHistoryCustomerSerializer(orders,many=True)
+            return Response(serializer.data,status=200)
