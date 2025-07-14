@@ -168,8 +168,15 @@ class ListReturnRequestsAPIView(APIView):
       permission_classes = [IsCustomer]
       
       def get(self,request):
+            status_param = request.query_params.get('status')
             items = OrderItem.objects.filter(
                   order__user=request.user).exclude(return_status='none').order_by('-order__created_at')
+            
+            if status_param:
+                  items = items.filter(return_status=status_param)
+            else:
+                  items=items.filter(return_status='requested')
+                  
             serializer = ReturnRequestSerializer(items, many=True)#serializer kısmını sonra genisleticez unutma.
             return Response(serializer.data,status=200)
       
@@ -177,7 +184,13 @@ class ListReturnRequestsSellerAPIView(APIView):
       permission_classes = [IsSellerOrAdmin]
       
       def get(self, request):
-            items = OrderItem.objects.filter(product__seller=request.user,return_status='requested')
+            status_param = request.query_params.get('status')
+            items = OrderItem.objects.filter(product__seller=request.user).exclude(return_status='none')
+            
+            if status_param:
+                  items = items.filter(return_status=status_param)
+            else:
+                  items = items.filter(return_status='requested')
             serializer = ReturnRequestSerializer(items, many=True)
             return Response(serializer.data,status=200)
       
@@ -251,7 +264,7 @@ class OrderHistorySellerAPIView(APIView):
       permission_classes = [IsSellerOrAdmin]
       
       def get(self,request):
-            items = OrderItem.objects.filter(product__seller=request.user).order_by('-order__created_at')
+            items = OrderItem.objects.filter(product__seller=request.user,order__status='delivered').order_by('-order__created_at')
             serializer = OrderHistorySellerSerializer(items, many=True)
             return Response(serializer.data,status=200)
       

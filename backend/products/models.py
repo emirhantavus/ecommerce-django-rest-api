@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from decimal import Decimal
 
 User = get_user_model()
 
@@ -49,7 +50,7 @@ class Product(models.Model):
       @property
       def discount_price(self):
             if self.discount:
-                  return self.price * (1 - self.discount_rate/100) #discounted price
+                   return self.price * (Decimal('1') - Decimal(str(self.discount_rate)) / Decimal('100')) #discounted price
             return self.price # normal price If there is not discount
             
       def __str__(self):

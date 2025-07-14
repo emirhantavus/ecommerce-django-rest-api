@@ -32,12 +32,12 @@ class OrderSerializer(serializers.ModelSerializer):
                         quantity=cart_item.quantity,
                         price=price
                   )
-            total += price * cart_item.quantity
+                  total += price * cart_item.quantity
             order.total_price = total
             order.save()
             
             #sepet temizlik burda kalsın simdilik
-            cart_item.delete()
+            CartItem.objects.filter(user=user).delete()
             
             return order
             
@@ -67,7 +67,7 @@ class OrderHistorySellerSerializer(serializers.ModelSerializer):
       order_status = serializers.CharField(source='order.status', read_only=True)
       order_date = serializers.DateTimeField(source='order.created_at', read_only=True)
       product_name = serializers.CharField(source='product.name', read_only=True)
-      product_price = serializers.DecimalField(source='product.price', read_only=True, max_digits=10, decimal_places=2)
+      product_price = serializers.DecimalField(source='price', read_only=True, max_digits=10, decimal_places=2)
       item_total_price = serializers.SerializerMethodField()
       
       class Meta:
@@ -85,4 +85,4 @@ class OrderHistorySellerSerializer(serializers.ModelSerializer):
             }
       
       def get_item_total_price(self,data):
-            return data.quantity * data.product.price
+            return data.quantity * data.price
