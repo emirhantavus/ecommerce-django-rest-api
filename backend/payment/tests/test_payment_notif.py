@@ -35,7 +35,7 @@ class PaymentNotificationTestCase(APITestCase):
                   notif_customer = Notification.objects.filter(user=self.customer, subject__icontains="Order Has Been Recieved").first()
                   self.assertIsNotNone(notif_customer)
 
-                  notif_seller = Notification.objects.filter(user=self.seller, subject__icontains="New Order Received").first()
+                  notif_seller = Notification.objects.filter(user=self.seller, subject__icontains="New Order Received!").first()
                   self.assertIsNotNone(notif_seller)
             else: #If False, then we just send for customer for failed payment.
                   notif_fail = Notification.objects.filter(user=self.customer, subject__icontains="Failed").first()

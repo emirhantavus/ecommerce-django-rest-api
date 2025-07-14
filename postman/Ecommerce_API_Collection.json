@@ -1,0 +1,1239 @@
+{
+	"info": {
+		"_postman_id": "6173c765-ac6c-4d90-999b-510c89c21304",
+		"name": "ecommerce",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21754820"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"son@gmail.com\",\r\n    \"password\":\"passw0rd123\",\r\n    \"password2\":\"passw0rd123\",\r\n    \"phone_number\":\"xxx\",\r\n    \"first_name\":\"ffname\",\r\n    \"last:_name\":\"llname\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{user_url}}register/",
+							"host": [
+								"{{user_url}}register"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Token",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token f341259761d7bf8cab07af406f9ed4156e59e8e0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"test1@gmail.com\",\r\n    \"password\":\"test1123\",\r\n    \"password2\":\"test1123\",\r\n    \"phone_number\":\"xxx\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{user_url}}check-token/",
+							"host": [
+								"{{user_url}}check-token"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"admin@gmail.com\",\r\n    \"password\":\"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{user_url}}login/",
+							"host": [
+								"{{user_url}}login"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Category",
+					"item": [
+						{
+							"name": "Add Category",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"new_category\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{product_url}}category/",
+									"host": [
+										"{{product_url}}category"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Categories",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"new_category\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{product_url}}category/",
+									"host": [
+										"{{product_url}}category"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Favorites",
+					"item": [
+						{
+							"name": "Add Favorite",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"product_id\":5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{product_url}}favorites/",
+									"host": [
+										"{{product_url}}favorites"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Favorites",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"product_id\":5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{product_url}}favorites/",
+									"host": [
+										"{{product_url}}favorites"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Favorite",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"product_id\":5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{product_url}}favorite/2/",
+									"host": [
+										"{{product_url}}favorite"
+									],
+									"path": [
+										"2",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Add Product",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"discounted son\",\r\n    \"description\":\"test\",\r\n    \"price\":300.99,\r\n    \"stock\":5,\r\n    \"category\":3,\r\n    \"active\":true,\r\n    \"discount\":true,\r\n    \"discount_rate\":50\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{product_url}}",
+							"host": [
+								"{{product_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product PUT",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"updated product\",\r\n    \"price\":1,\r\n    \"stock\":3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{product_url}}4/update/",
+							"host": [
+								"{{product_url}}4"
+							],
+							"path": [
+								"update",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"updated product\",\r\n    \"price\":1,\r\n    \"stock\":3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{product_url}}8/delete/",
+							"host": [
+								"{{product_url}}8"
+							],
+							"path": [
+								"delete",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product PATCH",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"updated product with patch\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{product_url}}4/update/",
+							"host": [
+								"{{product_url}}4"
+							],
+							"path": [
+								"update",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{product_url}}",
+							"host": [
+								"{{product_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product pk",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{product_url}}1/",
+							"host": [
+								"{{product_url}}1"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products By Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{product_url}}?category=elektrik",
+							"host": [
+								"{{product_url}}"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "elektrik"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products By Seller",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{product_url}}?seller=3",
+							"host": [
+								"{{product_url}}"
+							],
+							"query": [
+								{
+									"key": "seller",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products By Discount",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{product_url}}?discount=true",
+							"host": [
+								"{{product_url}}"
+							],
+							"query": [
+								{
+									"key": "discount",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products By Stock",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{product_url}}?stock=1",
+							"host": [
+								"{{product_url}}"
+							],
+							"query": [
+								{
+									"key": "stock",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Seller Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{product_url}}seller/3/products/",
+							"host": [
+								"{{product_url}}seller"
+							],
+							"path": [
+								"3",
+								"products",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Products",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{product_url}}?sort_by=price&order=desc",
+							"host": [
+								"{{product_url}}"
+							],
+							"query": [
+								{
+									"key": "sort_by",
+									"value": "price"
+								},
+								{
+									"key": "order",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "List Cart",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{cart_url}}",
+							"host": [
+								"{{cart_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add to Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"product\":1,\r\n    \"quantity\":2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cart_url}}",
+							"host": [
+								"{{cart_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Cart",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token f341259761d7bf8cab07af406f9ed4156e59e8e0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quantity\":1000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cart_url}}5/",
+							"host": [
+								"{{cart_url}}5"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Cart Item",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token f341259761d7bf8cab07af406f9ed4156e59e8e0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"product\":1,\r\n    \"quantity\":2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cart_url}}5/",
+							"host": [
+								"{{cart_url}}5"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"address\":\"son address\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_url}}",
+							"host": [
+								"{{order_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Process Return Request (Seller)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\":\"approve\"\r\n}\r\n\r\n// Action can be 'approve' or 'reject' \r\n// If you choose 'reject' then U can also give 'reject_reason' param.",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_url}}order-items/3/process-return/",
+							"host": [
+								"{{order_url}}order-items"
+							],
+							"path": [
+								"3",
+								"process-return",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Order (Customer)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_url}}1/cancel/",
+							"host": [
+								"{{order_url}}1"
+							],
+							"path": [
+								"cancel",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request Return (Customer)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"return_type\":\"refund\"\r\n} \r\n// U can use 'refund' and 'exchange'. \r\n// Refund is for moneyback. Exchange is for exchanging :D\r\n/*        \"return_type\": \"refund\",\r\n        \"return_reason\": \"Ucan also write reason here\",\r\n        \"return_image\": \"U can send image here. upload it. Or U can upload it in params as image\"\r\n*/",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_url}}order-items/3/request-return/",
+							"host": [
+								"{{order_url}}order-items"
+							],
+							"path": [
+								"3",
+								"request-return",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List My Order History",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_url}}history/customer/",
+							"host": [
+								"{{order_url}}history"
+							],
+							"path": [
+								"customer",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Active Order List",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_url}}active/",
+							"host": [
+								"{{order_url}}active"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View My Return Requests (Customer)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_url}}my/return-requests/",
+							"host": [
+								"{{order_url}}my"
+							],
+							"path": [
+								"return-requests",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Return Requests for My Products (Seller)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_url}}seller/return-requests/",
+							"host": [
+								"{{order_url}}seller"
+							],
+							"path": [
+								"return-requests",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Order Detail",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_url}}history/1/",
+							"host": [
+								"{{order_url}}history"
+							],
+							"path": [
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Seller Order History",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_url}}history/seller/",
+							"host": [
+								"{{order_url}}history"
+							],
+							"path": [
+								"seller",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\":\"delivered\"\r\n} // status choices can be = ['shipped','delivered','cancelled']",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_url}}11/update-status/",
+							"host": [
+								"{{order_url}}11"
+							],
+							"path": [
+								"update-status",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "Make Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"order\":11\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payment_url}}",
+							"host": [
+								"{{payment_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Payment List Customer",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{payment_url}}my/",
+							"host": [
+								"{{payment_url}}my"
+							],
+							"path": [
+								""
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sales List Seller",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{payment_url}}seller/sales/",
+							"host": [
+								"{{payment_url}}seller"
+							],
+							"path": [
+								"sales",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "user_url",
+			"value": "127.0.0.1:8000/api/users/",
+			"type": "string"
+		},
+		{
+			"key": "base_url",
+			"value": "127.0.0.1:8000/api/",
+			"type": "string"
+		},
+		{
+			"key": "product_url",
+			"value": "127.0.0.1:8000/api/products/",
+			"type": "string"
+		},
+		{
+			"key": "cart_url",
+			"value": "127.0.0.1:8000/api/cart/",
+			"type": "string"
+		},
+		{
+			"key": "order_url",
+			"value": "127.0.0.1:8000/api/order/",
+			"type": "string"
+		},
+		{
+			"key": "payment_url",
+			"value": "127.0.0.1:8000/api/payment/",
+			"type": "string"
+		}
+	]
+}
