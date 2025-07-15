@@ -1,0 +1,48 @@
+name: Django Ecommerce CI
+# https://yamlchecker.com -- kalsın burda committen once bak.
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: ecommerce
+          POSTGRES_PASSWORD: ecommerce
+          POSTGRES_DB: ecommerce
+        ports:
+          - 5432:5432
+    env:
+      DJANGO_DB_NAME: ecommerce
+      DJANGO_DB_USER: ecommerce
+      DJANGO_DB_PASS: ecommerce
+      DJANGO_DB_HOST: 127.0.0.1
+      DJANGO_DB_PORT: 5432
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.5'
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: pip install -r requirements.txt
+
+      - name: Run migrations
+        working-directory: ./backend
+        run: python manage.py migrate
+
+      - name: Run tests
+        working-directory: ./backend
+        run: python manage.py test
