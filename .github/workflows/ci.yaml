@@ -55,6 +55,13 @@ jobs:
         run: |
           nohup celery -A ecommerce worker --loglevel=info --pool=solo &
 
-      - name: Run tests
+      - name: Run tests and collect coverage
         working-directory: ./backend
-        run: python manage.py test
+        run: |
+          coverage run manage.py test
+          coverage xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./backend/coverage.xml
