@@ -269,6 +269,10 @@ Authorization: Token YOUR_TOKEN
 
 ---
 
+[![codecov](https://codecov.io/github/emirhantavus/ecommerce-django-rest-api/graph/badge.svg?token=XJ570NJD0O)](https://app.codecov.io/github/emirhantavus/ecommerce-django-rest-api/tree/main)
+
+---
+
 ### 🛡 Authentication & User App
 
 - **test_user_valid_login**
