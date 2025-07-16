@@ -1,0 +1,56 @@
+version: "3.1"
+#https://codebeautify.org/yaml-validator/cbccd63a
+services:
+  django:
+    container_name: ecommerce_django_backend
+    build: ./backend
+    ports:
+      - 8000:8000
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - .env.docker
+    depends_on:
+      - db
+      - redis
+  
+  db:
+    container_name: ecommerce_db
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ecommerce
+      POSTGRES_PASSWORD: ecommerce
+      POSTGRES_DB: ecommerce
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  
+  redis:
+    image: redis:7
+    container_name: ecommerce_redis
+    ports:
+      - 6379:6379
+  
+  celery:
+    build: ./backend
+    container_name: ecommerce_celery
+    command: celery -A ecommerce worker --loglevel=info --pool=solo
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env.docker
+
+  flower:
+    build: ./backend
+    container_name: ecommerce_flower
+    command: celery -A ecommerce flower --port=5555
+    ports:
+      - 5555:5555
+    depends_on:
+      - celery
+    env_file:
+      - .env.docker
+
+volumes:
+  pgdata:
