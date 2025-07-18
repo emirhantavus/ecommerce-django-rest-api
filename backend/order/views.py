@@ -9,6 +9,7 @@ from .serializers import (OrderSerializer, ReturnRequestSerializer,
 from .permissions import IsCustomer, IsSellerOrAdmin
 from django.shortcuts import get_object_or_404
 from ecommerce.utils.notifications import send_notification_and_email
+from drf_yasg.utils import swagger_auto_schema
 
 class OrderAPIView(APIView):
       permission_classes = [IsAuthenticated]
@@ -18,6 +19,7 @@ class OrderAPIView(APIView):
             serializer = OrderSerializer(order, many=True)
             return Response(serializer.data,status.HTTP_200_OK) #Unnecessary here !!
       
+      @swagger_auto_schema(request_body=OrderSerializer)
       def post(self, request):
             serializer = OrderSerializer(data=request.data, context={'request':request})
             if serializer.is_valid():
@@ -29,6 +31,7 @@ class OrderAPIView(APIView):
 class UpdateOrderStatusAPIView(APIView):
       permission_classes = [IsSellerOrAdmin]
       
+      @swagger_auto_schema(request_body=None)
       def patch(self, request, o_id):
             order = Order.objects.filter(id=o_id).first()
             if not order:
@@ -94,6 +97,7 @@ class UpdateOrderStatusAPIView(APIView):
 class CancelOrderAPIView(APIView):
       permission_classes = [IsCustomer]
       
+      @swagger_auto_schema(request_body=None)
       def post(self, request, o_id):
             order = Order.objects.filter(id=o_id, user=request.user).first()
             
@@ -125,6 +129,7 @@ class CancelOrderAPIView(APIView):
 class RequestReturnAPIView(APIView):
       permission_classes = [IsCustomer]
       
+      @swagger_auto_schema(request_body=ReturnRequestSerializer)
       def post(self,request,item_id):
             item = get_object_or_404(OrderItem, id=item_id, order__user=request.user)
             
@@ -197,6 +202,7 @@ class ListReturnRequestsSellerAPIView(APIView):
 class ProcessReturnRequestsSellerAPIView(APIView):
       permission_classes = [IsSellerOrAdmin]
       
+      @swagger_auto_schema(request_body=None)
       def post(self,request,item_id):
             item = get_object_or_404(OrderItem, id=item_id, product__seller=request.user, return_status='requested')
             action = request.data.get('action')

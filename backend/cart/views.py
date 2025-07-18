@@ -6,6 +6,7 @@ from rest_framework import status
 from .models import CartItem
 from .serializers import CartItemSerializer
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
 
 class CartItemCreateListAPIView(APIView):
       permission_classes = [IsAuthenticated]
@@ -20,6 +21,7 @@ class CartItemCreateListAPIView(APIView):
                   'total_cart_price': total
             },status.HTTP_200_OK)
       
+      @swagger_auto_schema(request_body=CartItemSerializer)
       def post(self,request):
             user = request.user
             product_id = request.data.get('product')
@@ -51,6 +53,7 @@ class CartItemCreateListAPIView(APIView):
 class CartItemRetrieveOrDestroyAPIView(APIView):
       permission_classes = [IsAuthenticated]
       
+      @swagger_auto_schema(request_body=CartItemSerializer)
       def put(self, request, id):
             cartItem = get_object_or_404(CartItem, id=id, user=request.user)
             serializer = CartItemSerializer(cartItem, data= request.data, partial=True)

@@ -47,4 +47,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
       email = serializers.EmailField()
       token = serializers.CharField()
       new_password = serializers.CharField(min_length=8, write_only=True)
-      
+
+class LoginSerializer(serializers.Serializer):
+      email = serializers.EmailField()
+      password = serializers.CharField()

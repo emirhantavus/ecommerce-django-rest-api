@@ -13,6 +13,7 @@ from django.core.cache import cache
 from django.views.decorators.vary import vary_on_headers
 from django.shortcuts import get_object_or_404
 import re
+from drf_yasg.utils import swagger_auto_schema
 
 class CategoryViewSet(viewsets.ModelViewSet):
       queryset = Category.objects.all()
@@ -97,6 +98,7 @@ class ProductAPIView(APIView, LimitOffsetPagination):
             serializer = ProductSerializer(queryset, many=True)
             return Response(serializer.data,status=status.HTTP_200_OK)
       
+      @swagger_auto_schema(request_body=ProductSerializer)
       def post(self,request):
             if request.user.role == "seller": #only sellers can add items.
                   serializer = ProductSerializer(data=request.data, context={'request':request})
@@ -137,6 +139,7 @@ class ProductUpdateDeleteAPIView(APIView):
                         return Response({'message':'U can not delete this product.'},status=status.HTTP_403_FORBIDDEN)
             return product
       
+      @swagger_auto_schema(request_body=ProductSerializer)
       def put(self,request,pk):
             product = self.get_object(request, pk)
             if isinstance(product, Response):
@@ -148,6 +151,7 @@ class ProductUpdateDeleteAPIView(APIView):
                   return Response({'message':'Product edited successfuly','product':serializer.data},status=status.HTTP_200_OK)
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
       
+      @swagger_auto_schema(request_body=ProductSerializer)
       def patch(self,request,pk):
             product = self.get_object(request, pk)
             if isinstance(product, Response):
@@ -183,6 +187,7 @@ class FavoritesAPIView(APIView):
             serializer = FavoritesSerializer(favs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
       
+      @swagger_auto_schema(request_body=FavoritesSerializer)
       def post(self,request):
             product_id = request.data.get("product_id")
             product = get_object_or_404(Product, id=product_id)

@@ -7,12 +7,14 @@ from order.models import Order, OrderItem
 from .serializers import PaymentSerializer
 from .models import Payment
 from order.permissions import IsCustomer, IsSellerOrAdmin
+from drf_yasg.utils import swagger_auto_schema
 
 User = get_user_model()
 
 class PaymentAPIView(APIView):
       permission_classes = [IsAuthenticated]
       
+      @swagger_auto_schema(request_body=PaymentSerializer)
       def post(self,request):
             serializer = PaymentSerializer(data=request.data, context={'request':request})
             if serializer.is_valid():

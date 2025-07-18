@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import CustomUser , Profile
 from .serializers import (RegisterSerializer , UserSerializer , ProfileSerializer,
-                          PasswordResetSerializer, PasswordResetConfirmSerializer)
+                          PasswordResetSerializer, PasswordResetConfirmSerializer, LoginSerializer)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,9 +12,12 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from rest_framework.authentication import TokenAuthentication
+from drf_yasg.utils import swagger_auto_schema
 
 class RegisterAPIView(APIView):
       permission_classes = [AllowAny]
+      serializer_class = RegisterSerializer
+      @swagger_auto_schema(request_body=RegisterSerializer)
       def post(self,request):
             serializer = RegisterSerializer(data=request.data)
             if serializer.is_valid():
@@ -34,7 +37,12 @@ class RegisterAPIView(APIView):
       
 class LoginAPIView(APIView):
       permission_classes = [AllowAny]
+      serializer_class = LoginSerializer
+      
+      @swagger_auto_schema(request_body=LoginSerializer)
       def post(self,request):
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
             email = request.data.get('email')
             password = request.data.get('password')
             
@@ -71,13 +79,14 @@ class ProtectedEndpoint(APIView):
       
 class ProfileAPIView(APIView):
       permission_classes = [IsAuthenticated]
-      
+
       def get(self,request,pk):
             profile = get_object_or_404(Profile, id=pk)
             serializer = ProfileSerializer(profile)
             
             return Response(serializer.data, status=status.HTTP_200_OK)
       
+      @swagger_auto_schema(request_body=ProfileSerializer)
       def put(self,request,pk):
             profile = get_object_or_404(Profile,id=pk)
             if profile.user != request.user:
@@ -93,6 +102,7 @@ class ProfileAPIView(APIView):
 class PasswordResetView(APIView):
       permission_classes = [AllowAny]
       
+      @swagger_auto_schema(request_body=PasswordResetSerializer)
       def post(self, request):
             serializer = PasswordResetSerializer(data=request.data)
             if serializer.is_valid():
@@ -119,6 +129,7 @@ class PasswordResetView(APIView):
 class PasswordResetConfirmView(APIView):
       permission_classes = [AllowAny]
       
+      @swagger_auto_schema(request_body=PasswordResetConfirmSerializer)
       def post(self, request):
             serializer = PasswordResetConfirmSerializer(data=request.data)
             if serializer.is_valid():
