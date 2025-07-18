@@ -42,17 +42,20 @@ class LoginAPIView(APIView):
       @swagger_auto_schema(request_body=LoginSerializer)
       def post(self,request):
             serializer = self.serializer_class(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            email = request.data.get('email')
-            password = request.data.get('password')
+            if not serializer.is_valid():
+                  return Response(serializer.errors, status=400)
+            
+            email = serializer.validated_data.get('email')
+            password = serializer.validated_data.get('password')
+            
+            if email and '@' not in email:
+                  return Response({'email':'Enter a valid email address'}, status=status.HTTP_400_BAD_REQUEST)
             
             if not email or not password:
                   return Response({
                         'error': 'Email and password are required.'},
                         status=status.HTTP_400_BAD_REQUEST
                   )
-            if '@' not in email:
-                  return Response({'email':'Enter a valid email address'}, status=status.HTTP_400_BAD_REQUEST)
                   
             user = authenticate(request, email=email, password=password)
             if user is not None:

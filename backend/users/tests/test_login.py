@@ -39,7 +39,7 @@ class LoginTestCase(TestCase):
             }
             response = self.client.post(self.login_url, data)
             self.assertEqual(response.status_code, 400)
-            self.assertNotIn('password',response.data)
+            self.assertNotIn('error',response.data)
             
       def test_user_login_missing_email(self):
             data = {
@@ -47,7 +47,7 @@ class LoginTestCase(TestCase):
             }
             response = self.client.post(self.login_url, data)
             self.assertEqual(response.status_code, 400)
-            self.assertIn('error',response.data)
+            self.assertIn('email',response.data)
             
       def test_login_unregistered_email(self):
             data = {
