@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'payment',
     'notifications',
     'drf_yasg',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
