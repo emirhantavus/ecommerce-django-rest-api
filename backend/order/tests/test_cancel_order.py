@@ -64,6 +64,4 @@ class CancelOrderTest(APITestCase):
             response = self.client.post(self.cancel_url)
             self.assertEqual(response.status_code, 200)
             self.product.refresh_from_db()
-            print(self.order_item.quantity)
             self.assertEqual(self.product.stock, old_stock + self.order_item.quantity)
-            print(self.product.stock) # it works

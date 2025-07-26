@@ -69,7 +69,6 @@ class OrderStatusTest(APITestCase):
             self.assertEqual(response.status_code, 401)
             
       def test_update_order_status_cancelled(self):
-            print(self.product.stock)
             old_stock = self.product.stock
             self.client.force_authenticate(user=self.seller)
             data = {'status':'cancelled'}
@@ -77,8 +76,6 @@ class OrderStatusTest(APITestCase):
             self.assertEqual(response.status_code, 200)
             self.product.refresh_from_db()
             self.assertEqual(self.product.stock, old_stock + self.order_item.quantity)
-            print(self.order_item.quantity)
-            print(self.product.stock)
             
             notification = Notification.objects.filter(user=self.customer, subject__icontains="cancelled").first()
             self.assertIsNotNone(notification)

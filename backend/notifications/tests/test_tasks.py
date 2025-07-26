@@ -33,5 +33,3 @@ class SendOrderEmailTaskTest(TestCase):
             self.assertEqual(notification.subject, subject)
             self.assertEqual(notification.message, message)
             self.assertEqual(notification.status, 'pending')
-            print(Notification.objects.all()) # It works.
-            #<QuerySet [<Notification: emir@gmail.com (customer) -- email -- Test Subject>]>
