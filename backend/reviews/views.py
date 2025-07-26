@@ -26,6 +26,9 @@ class ReviewAPIView(APIView):
             if not own:
                   return Response({'error':'U can only review products u bought.!'},status=403)
             
+            if Review.objects.filter(user=request.user, product=product).exists():
+                  return Response({'error':'You have already reviewed this product.'},status=400)
+            
             serializer = ReviewSerializer(data=request.data, context={
                   'request':request,
                   'product':product
@@ -50,3 +53,19 @@ class UserReviewListAPIView(ListAPIView):
       
       def get_queryset(self):
             return Review.objects.filter(user=self.request.user).order_by('-created_at')
+      
+class ReviewDetailAPIView(APIView):
+      permission_classes = [IsAuthenticated]
+      
+      def patch(self,request, pk):
+            review = get_object_or_404(Review, id=pk,user=request.user)
+            serializer = ReviewSerializer(review, data=request.data, partial=True)
+            if serializer.is_valid():
+                  serializer.save()
+                  return Response(serializer.data,status=200)
+            return Response(serializer.errors,status=400)
+      
+      def delete(self,request,pk):
+            review = get_object_or_404(Review,id=pk,user=request.user)
+            review.delete()
+            return Response({'message':'Review deleted.!'},status=204)
