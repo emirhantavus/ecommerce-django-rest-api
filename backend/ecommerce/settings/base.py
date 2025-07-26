@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'notifications',
     'drf_yasg',
     'dashboard',
+    'reviews',
 ]
 
 MIDDLEWARE = [

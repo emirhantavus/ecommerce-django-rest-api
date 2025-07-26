@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/payment/',include('payment.urls')),
     path('api/notifications/',include('notifications.urls')),
     path('api/dashboard/',include('dashboard.urls')),
+    path('api/reviews/',include('reviews.urls')),
     path('silk/',include('silk.urls',namespace='silk')),
     ###
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

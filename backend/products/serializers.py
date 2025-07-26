@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from .models import Product, Category , Favorites
 from decimal import Decimal
+from django.db.models import Avg
 
 User = get_user_model()
 
@@ -33,10 +34,11 @@ class ProductSerializer(serializers.ModelSerializer):
       seller = SellerSerializer(read_only=True)
       price = serializers.DecimalField(max_digits=10,decimal_places=2,coerce_to_string=False)
       is_favorited = serializers.SerializerMethodField()
+      average_rating = serializers.SerializerMethodField()
       class Meta:
             model = Product
             fields = ('id','name','price','discount','discounted_price','discount_rate','stock',
-                      'active','low_stock','category','is_favorited','seller')
+                      'active','low_stock','category','is_favorited','seller','average_rating')
             
       def create(self, validated_data):
             validated_data['seller'] = self.context['request'].user
@@ -60,6 +62,13 @@ class ProductSerializer(serializers.ModelSerializer):
             if not request or not  request.user.is_authenticated:
                   return False
             return Favorites.objects.filter(user=request.user, product_id=obj.id).exists()
+      
+      def get_average_rating(self, obj):
+            average = obj.reviews.all().aggregate(Avg('rating'))
+            average = average['rating__avg']
+            if average is None:
+                  return 0
+            return round(average)
       
 
 class FavoritesSerializer(serializers.ModelSerializer):

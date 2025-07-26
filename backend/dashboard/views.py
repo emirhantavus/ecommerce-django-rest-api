@@ -6,14 +6,16 @@ from .serializers import SellerDashboardSerializer, AdminDashboardSerializer
 from .permissions import IsSeller , IsAdmin
 from products.models import Product
 from order.models import OrderItem, Order
-from django.db.models import Sum , F , Max
+from django.db.models import Sum , F
 from django.contrib.auth import get_user_model
+from drf_yasg.utils import swagger_auto_schema
 
 User = get_user_model()
 
 class SellerDashboardView(APIView):
       permission_classes = [IsSeller]
       
+      @swagger_auto_schema(request_body=SellerDashboardSerializer)
       def get(self, request):
             user = request.user
             products = Product.objects.filter(seller=user).order_by("-created_at")
@@ -49,6 +51,7 @@ class SellerDashboardView(APIView):
 class AdminDashboardView(APIView):
       permission_classes = [IsAdmin]
       
+      @swagger_auto_schema(request_body=AdminDashboardSerializer)
       def get(self, request):
             
             total_users = User.objects.count()
