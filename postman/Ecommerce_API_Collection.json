@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\":\"son@gmail.com\",\r\n    \"password\":\"passw0rd123\",\r\n    \"password2\":\"passw0rd123\",\r\n    \"phone_number\":\"xxx\",\r\n    \"first_name\":\"ffname\",\r\n    \"last:_name\":\"llname\"\r\n}",
+							"raw": "{\r\n    \"email\":\"s@gmail.com\",\r\n    \"password\":\"passw0rd123\",\r\n    \"password2\":\"passw0rd123\",\r\n    \"phone_number\":\"xxx\",\r\n    \"first_name\":\"Emirhan\",\r\n    \"last:_name\":\"Tavus\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -111,13 +111,13 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+										"value": "Token 5010dbcec49f32788a4b1e1bfecf396cb26df3ae",
 										"type": "text"
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"name\":\"new_category\"\r\n}",
+									"raw": "{\r\n    \"name\":\"Tech\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -288,13 +288,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"value": "Token 476c3f5b219d2b568e6577e2f5cbb42d3253dc00",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\":\"discounted son\",\r\n    \"description\":\"test\",\r\n    \"price\":300.99,\r\n    \"stock\":5,\r\n    \"category\":3,\r\n    \"active\":true,\r\n    \"discount\":true,\r\n    \"discount_rate\":50\r\n}",
+							"raw": "{\r\n    \"name\":\"Laptop\",\r\n    \"description\":\"test\",\r\n    \"price\":300.00,\r\n    \"stock\":50,\r\n    \"category\":1,\r\n    \"active\":true,\r\n    \"discount\":true,\r\n    \"discount_rate\":20\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -597,7 +597,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"value": "Token a8ef4fd046f5118b99b9bac4340630473062282c",
 								"type": "text"
 							}
 						],
@@ -617,13 +617,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"value": "Token 504d96dd5d11bbc26727c63c0e47d0672c159c14",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"product\":1,\r\n    \"quantity\":2\r\n}",
+							"raw": "{\r\n    \"product\":1,\r\n    \"quantity\":3\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -715,7 +715,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"value": "Token 504d96dd5d11bbc26727c63c0e47d0672c159c14",
 								"type": "text"
 							}
 						],
@@ -848,7 +848,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"value": "Token 504d96dd5d11bbc26727c63c0e47d0672c159c14",
 								"type": "text"
 							}
 						],
@@ -884,7 +884,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"value": "Token 504d96dd5d11bbc26727c63c0e47d0672c159c14",
 								"type": "text"
 							}
 						],
@@ -1079,9 +1079,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{order_url}}11/update-status/",
+							"raw": "{{order_url}}14/update-status/",
 							"host": [
-								"{{order_url}}11"
+								"{{order_url}}14"
 							],
 							"path": [
 								"update-status",
@@ -1103,13 +1103,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Token 868949160af526d3fa024849b91bf86acb953172",
+								"value": "Token 504d96dd5d11bbc26727c63c0e47d0672c159c14",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"order\":11\r\n}",
+							"raw": "{\r\n    \"order\":19\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1180,6 +1180,202 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Dashboards",
+			"item": [
+				{
+					"name": "Get Seller Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{dashboard_url}}seller/",
+							"host": [
+								"{{dashboard_url}}seller"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Admin Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 1a5943fbabac3ebef5386d60486b0491348c946d",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{dashboard_url}}admin/",
+							"host": [
+								"{{dashboard_url}}admin"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reviews",
+			"item": [
+				{
+					"name": "My Reviews",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 504d96dd5d11bbc26727c63c0e47d0672c159c14",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{reviews_url}}my-reviews/",
+							"host": [
+								"{{reviews_url}}my-reviews"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Product Reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{reviews_url}}products/1/",
+							"host": [
+								"{{reviews_url}}products"
+							],
+							"path": [
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Review a Product",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 504d96dd5d11bbc26727c63c0e47d0672c159c14",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 1,\r\n    \"comment\": \"patch\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{reviews_url}}my-reviews/2/",
+							"host": [
+								"{{reviews_url}}my-reviews"
+							],
+							"path": [
+								"2",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a review",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 504d96dd5d11bbc26727c63c0e47d0672c159c14",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{reviews_url}}my-reviews/1/",
+							"host": [
+								"{{reviews_url}}my-reviews"
+							],
+							"path": [
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Review a Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 504d96dd5d11bbc26727c63c0e47d0672c159c14",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 5,\r\n    \"comment\": \"düzgün oldu\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{reviews_url}}products/1/",
+							"host": [
+								"{{reviews_url}}products"
+							],
+							"path": [
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -1233,6 +1429,16 @@
 		{
 			"key": "payment_url",
 			"value": "127.0.0.1:8000/api/payment/",
+			"type": "string"
+		},
+		{
+			"key": "dashboard_url",
+			"value": "127.0.0.1:8000/api/dashboard/",
+			"type": "string"
+		},
+		{
+			"key": "reviews_url",
+			"value": "127.0.0.1:8000/api/reviews/",
 			"type": "string"
 		}
 	]

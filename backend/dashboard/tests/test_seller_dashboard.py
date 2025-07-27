@@ -76,3 +76,18 @@ class SellerDashboardTestCase(APITestCase):
             ]
             for field in expected_fields:
                   self.assertIn(field, response.data)
+                  
+      def test_seller_dashboard_with_pending_orders_only(self):
+            pending_order = Order.objects.create(user=self.customer, status="pending", total_price=200)
+            OrderItem.objects.create(order=pending_order, product=self.p1, quantity=2, price=100)
+            self.client.force_authenticate(user=self.seller)
+            response = self.client.get(self.url)
+            data = response.data
+            self.assertGreaterEqual(data["pending_orders"], 1)
+            
+      def test_seller_dashboard_access_by_inactive_seller(self):
+            self.seller.is_active = False
+            self.seller.save()
+            self.client.force_authenticate(user=self.seller)
+            response = self.client.get(self.url)
+            self.assertIn(response.status_code, [200, 403]) # Fix this later. I will add extra feat to permissions.

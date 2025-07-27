@@ -65,3 +65,37 @@ class AdminDashboardTests(APITestCase):
             self.assertEqual(data['total_products'], 2)
             self.assertEqual(data['total_orders'], 1)
             self.assertEqual(data['total_revenue'], '255.00')
+            
+      def test_admin_dashboard_with_no_data(self):
+            self.client.force_authenticate(user=self.admin_user)
+            response = self.client.get(self.url)
+            data = response.data
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(data["total_users"], 3)  # 3 admin-seller-customer per 1
+            self.assertEqual(data["total_sellers"], 1) #from setup 1, maybe later I rewrite this clear. !! LOOK !!
+            self.assertEqual(data["total_products"], 0)
+            self.assertEqual(data["total_orders"], 0)
+            self.assertEqual(data["total_revenue"], "0.00")
+            
+      def test_admin_dashboard_user_roles_counts(self):
+            self.create_extra_users()
+            seller = User.objects.get(email="seller1@gmail.com")
+            seller.delete()
+            self.client.force_authenticate(user=self.admin_user)
+            response = self.client.get(self.url)
+            data = response.data
+            self.assertEqual(data["total_users"], 6)  # 4 + 3 - 1
+            self.assertEqual(data["total_sellers"], 2)  # 3 - 1 
+
+      def test_admin_dashboard_invalid_method(self):
+            self.client.force_authenticate(user=self.admin_user)
+            post_response = self.client.post(self.url, {})
+            put_response = self.client.put(self.url, {})
+            self.assertEqual(post_response.status_code, 405)
+            self.assertEqual(put_response.status_code, 405)
+      
+      def test_dashboard_wrong_role_access(self):
+            staff_user = User.objects.create_user(email="staff@gmail.com", password="passw0rd", role="customer", is_staff=True)
+            self.client.force_authenticate(user=staff_user)
+            response = self.client.get(self.url)
+            self.assertEqual(response.status_code, 403)

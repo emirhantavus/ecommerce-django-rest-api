@@ -154,3 +154,31 @@
 
 - **test_send_or_email_task_creates_notification**
 - **test_send_notification_and_email_creates_notification**
+
+---
+
+### Admin Dashboard
+
+- **test_admin_can_access_dashboard**
+- **test_seller_cannot_access_admin_dashboard**
+- **test_customer_cannot_access_admin_dashboard**
+- **test_anonymous_user_cannot_access_admin_dashboard**
+- **test_admin_dashboard_returns_correct_data**
+- **test_admin_dashboard_with_no_data**
+- **test_admin_dashboard_user_roles_counts**
+- **test_admin_dashboard_invalid_method**
+- **test_dashboard_wrong_role_access**
+
+---
+
+#### Seller Dashboard
+
+- **test_seller_dashboard_with_valid_data**
+- **test_seller_dashboard_requires_authentication**
+- **test_customer_cannot_access_seller_dashboard**
+- **test_seller_with_no_products_returns_zero**
+- **test_seller_stock_alert_list_low_products**
+- **test_seller_dashboard_calculates_sales_and_revenue**
+- **test_seller_dashboard_response_contains_expected_fields**
+- **test_seller_dashboard_with_pending_orders_only**
+- **test_seller_dashboard_access_by_inactive_seller**
