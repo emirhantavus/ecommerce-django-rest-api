@@ -171,7 +171,7 @@
 
 ---
 
-#### Seller Dashboard
+### Seller Dashboard
 
 - **test_seller_dashboard_with_valid_data**
 - **test_seller_dashboard_requires_authentication**
@@ -182,3 +182,20 @@
 - **test_seller_dashboard_response_contains_expected_fields**
 - **test_seller_dashboard_with_pending_orders_only**
 - **test_seller_dashboard_access_by_inactive_seller**
+
+### Reviews App
+
+- **test_create_review_authenticated**
+- **test_create_review_unauthenticated**
+- **test_create_review_not_purchased**
+- **test_update_review_owner**
+- **test_update_review_not_owner**
+- **test_delete_review_owner**
+- **test_delete_review_not_owner**
+- **test_get_product_reviews**
+- **test_get_user_reviews**
+- **test_duplicate_review_blocked**
+- **test_rating_average_and_count**
+- **test_review_with_invalid_rating**
+- **test_review_with_empty_comment**
+- **test_review_edit_after_delete**

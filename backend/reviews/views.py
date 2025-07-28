@@ -35,11 +35,11 @@ class ReviewAPIView(APIView):
             })
             if serializer.is_valid():
                   serializer.save()
-                  return Response({'message': f'Review posted to product id : {product_id}'},status=200)
+                  return Response(serializer.data,status=201)
             return Response(serializer.errors,status=400)
       
       
-      def get(self,requst, product_id):
+      def get(self,request, product_id):
             product = get_object_or_404(Product, id=product_id)
             reviews = product.reviews.all()
             if not reviews.exists():
