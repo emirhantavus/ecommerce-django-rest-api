@@ -33,3 +33,11 @@ class SendOrderEmailTaskTest(TestCase):
             self.assertEqual(notification.subject, subject)
             self.assertEqual(notification.message, message)
             self.assertEqual(notification.status, 'pending')
+            
+            #Notf
+            self.assertTrue(Notification.objects.filter(
+                  user=self.user,
+                  subject=subject,
+                  message=message
+            ).exists())
+            self.assertEqual(Notification.objects.count(), 1)

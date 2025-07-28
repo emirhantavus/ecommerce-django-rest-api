@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from ..models import Profile
+from users.models import Profile
 from rest_framework.test import APIClient
 import json
 

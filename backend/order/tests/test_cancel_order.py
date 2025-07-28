@@ -58,7 +58,6 @@ class CancelOrderTest(APITestCase):
             
             
       def test_cancel_returns_stock(self):
-            print(self.product.stock)
             old_stock = self.product.stock
             self.client.force_authenticate(user=self.customer)
             response = self.client.post(self.cancel_url)

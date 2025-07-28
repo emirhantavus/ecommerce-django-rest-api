@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.contrib.auth import get_user_model
-from ..models import Product
+from products.models import Product
 from django.urls import reverse
 
 

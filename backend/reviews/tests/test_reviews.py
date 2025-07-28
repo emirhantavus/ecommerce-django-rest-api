@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from products.models import Product
 from order.models import Order, OrderItem
-from ..models import Review
+from reviews.models import Review
 
 User = get_user_model()
 

@@ -1,6 +1,6 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
-from ..models import Product, Category
+from products.models import Product, Category
 from django.contrib.auth import get_user_model
 from io import BytesIO
 from PIL import Image
