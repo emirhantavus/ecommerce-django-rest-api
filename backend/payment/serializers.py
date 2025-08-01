@@ -3,6 +3,7 @@ from .models import Payment
 from order.models import Order
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from ecommerce.utils.notifications import send_notification_and_email
+from order.services.shipment_service import create_shipment
 
 class PaymentSerializer(serializers.ModelSerializer):
       class Meta:
@@ -55,6 +56,9 @@ class PaymentSerializer(serializers.ModelSerializer):
                   for item in payment.order.order_items.all():
                        item.product.stock -= item.quantity
                        item.product.save()
+                  
+                  #Shipment service here
+                  create_shipment(payment.order)
                   
                   ## we send notification here. For customers.
                   send_notification_and_email(

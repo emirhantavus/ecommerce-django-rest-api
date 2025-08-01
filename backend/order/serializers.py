@@ -5,9 +5,10 @@ from cart.models import CartItem
 
 class OrderItemSerializer(serializers.ModelSerializer):
       product_name = serializers.CharField(source='product.name',read_only=True)
+      tracking_number = serializers.CharField(read_only=True)
       class Meta:
             model = OrderItem
-            fields = ('id','product_name','quantity','price')
+            fields = ('id','product_name','quantity','price','tracking_number')
 
 class OrderSerializer(serializers.ModelSerializer):
       items = OrderItemSerializer(many=True, read_only=True, source='order_items')

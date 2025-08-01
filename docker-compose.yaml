@@ -12,6 +12,8 @@ services:
     depends_on:
       - db
       - redis
+    networks:
+      - ecommerce-network
   
   db:
     container_name: ecommerce_db
@@ -24,12 +26,16 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    networks:
+      - ecommerce-network
   
   redis:
     image: redis:7
     container_name: ecommerce_redis
     ports:
       - 6379:6379
+    networks:
+      - ecommerce-network
   
   celery:
     build: ./backend
@@ -40,6 +46,8 @@ services:
       - redis
     env_file:
       - .env.docker
+    networks:
+      - ecommerce-network
 
   flower:
     build: ./backend
@@ -51,6 +59,12 @@ services:
       - celery
     env_file:
       - .env.docker
+    networks:
+      - ecommerce-network
 
 volumes:
   pgdata:
+   
+networks:
+  ecommerce-network:
+    external: true

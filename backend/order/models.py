@@ -33,6 +33,8 @@ class OrderItem(models.Model):
       quantity = models.PositiveIntegerField()
       price = models.DecimalField(max_digits=10, decimal_places=2)
       
+      tracking_number = models.CharField(max_length=100, blank=True, null=True) #Shipment
+      
       RETURN_STATUS_CHOICES = [
             ('none', 'No Return'),
             ('requested', 'Return Requested'),
@@ -51,4 +53,4 @@ class OrderItem(models.Model):
       return_image = models.ImageField(upload_to='returns/',blank=True, null=True) # maybe it's unnecessary
       
       def __str__(self):
-            return f"{self.product.name} -- {self.quantity} -- {self.price} -- {self.return_status}"
+            return f"{self.product.name} -- {self.quantity} -- {self.price} -- {self.return_status} -- {self.tracking_number}"
