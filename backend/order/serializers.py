@@ -1,14 +1,21 @@
 from rest_framework import serializers
 from .models import Order, OrderItem
 from cart.models import CartItem
+from order.services.shipment_service import get_shipment_by_tracking_number
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
       product_name = serializers.CharField(source='product.name',read_only=True)
       tracking_number = serializers.CharField(read_only=True)
+      shipment = serializers.SerializerMethodField()
       class Meta:
             model = OrderItem
-            fields = ('id','product_name','quantity','price','tracking_number')
+            fields = ('id','product_name','quantity','price','tracking_number','shipment')
+            
+      def get_shipment(self,obj):
+            if obj.tracking_number:
+                  return get_shipment_by_tracking_number(obj.tracking_number)
+            return None
 
 class OrderSerializer(serializers.ModelSerializer):
       items = OrderItemSerializer(many=True, read_only=True, source='order_items')
