@@ -6,11 +6,10 @@ from order.services.shipment_service import get_shipment_by_tracking_number
 
 class OrderItemSerializer(serializers.ModelSerializer):
       product_name = serializers.CharField(source='product.name',read_only=True)
-      tracking_number = serializers.CharField(read_only=True)
       shipment = serializers.SerializerMethodField()
       class Meta:
             model = OrderItem
-            fields = ('id','product_name','quantity','price','tracking_number','shipment')
+            fields = ('id','product_name','quantity','price','shipment')
             
       def get_shipment(self,obj):
             if obj.tracking_number:

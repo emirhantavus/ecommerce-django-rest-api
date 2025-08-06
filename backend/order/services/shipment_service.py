@@ -5,45 +5,39 @@ from collections import defaultdict
 
 SHIPMENT_API_URL = "http://shipping-api:9000/api/shipments/"
 
-def create_shipment(order):
-      print("### DENEME TEST SHİPMENT SERVİCE ###")
-      shipments = []
-      items_by_seller = defaultdict(list)
-      for item in order.order_items.all(): # [{1: [item..., item]}] seller: items
-            items_by_seller[item.product.seller].append(item)
-            
-      for seller, items in items_by_seller.items(): # one tracking_number for per seller
-            description = "test"
-            
-            if hasattr(seller, "profile") and (seller.profile.seller_name or seller.profile.company_name):
-                  sender_name = seller.profile.seller_name or seller.profile.company_name
-            elif seller.first_name or seller.last_name:
-                  sender_name = f"{seller.first_name or ''} {seller.last_name or ''}".strip()
-            else:
-                  sender_name = seller.email
-            
-            payload = {
-                  "sender_name": seller.profile.seller_name or f"{seller.first_name}",
-                  "sender_address": seller.address,
-                  "receiver_name": order.user.first_name,
-                  "receiver_address": order.address,
-                  "receiver_phone": order.user.phone_number,
-                  "description": description
-            }
+def create_shipment(order_item):
+      order = order_item.order
+      product = order_item.product
+      seller = product.seller
       
-            try:
-                  response = requests.post(SHIPMENT_API_URL, json=payload, timeout=5)
-                  response.raise_for_status()
-                  data = response.json()
-                  tracking_number = data.get('tracking_number')
-                  for i in items:
-                        i.tracking_number = tracking_number
-                        i.save()
-                  shipments.append(data)
-            except Exception as e:
-                  print("Shipment API Error: ",e)
-                  shipments.append({"error": str(e), "seller": sender_name})
-      return shipments
+      sender_name = seller.get_full_name()
+      sender_address = seller.address
+      
+      reciever_name = order.user.get_full_name()
+      reciever_address = order.user.address
+      reciever_phone = order.user.address
+            
+      payload = {
+            "sender_name": sender_name,
+            "sender_address": sender_address,
+            "receiver_name": reciever_name,
+            "receiver_address": reciever_address,
+            "receiver_phone": reciever_phone,
+            "description": f"{product.name} x{order_item.quantity}"
+      }
+      
+      try:
+            response = requests.post(SHIPMENT_API_URL, json=payload, timeout=5)
+            response.raise_for_status()
+            data = response.json()
+            tracking_number = data.get('tracking_number')
+            if tracking_number:
+                  order_item.tracking_number = tracking_number
+                  order_item.save()
+            return data
+      except Exception as e:
+            print("Shipment API Error: ",e)
+            return {'error':str(e)}
 
 def get_shipment_by_tracking_number(tracking_number):
       try:
@@ -56,4 +50,4 @@ def get_shipment_by_tracking_number(tracking_number):
             
       except Exception as e:
             print("Shipment API Error: ",e)
-            return None
+            return {'error':str(e)}

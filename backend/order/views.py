@@ -5,11 +5,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Order, OrderItem
 from .serializers import (OrderSerializer, ReturnRequestSerializer,
-                          OrderHistoryCustomerSerializer, OrderHistorySellerSerializer)
+                          OrderHistoryCustomerSerializer, OrderHistorySellerSerializer ,OrderItemSerializer)
 from .permissions import IsCustomer, IsSellerOrAdmin
 from django.shortcuts import get_object_or_404
 from ecommerce.utils.notifications import send_notification_and_email
 from drf_yasg.utils import swagger_auto_schema
+from order.services.shipment_service import create_shipment
 
 class OrderAPIView(APIView):
       permission_classes = [IsAuthenticated]
@@ -28,71 +29,26 @@ class OrderAPIView(APIView):
             return Response(serializer.errors, status=400)
       
       
-class UpdateOrderStatusAPIView(APIView):
+class ShipOrderItemAPIView(APIView):
       permission_classes = [IsSellerOrAdmin]
       
-      @swagger_auto_schema(request_body=None)
-      def patch(self, request, o_id):
-            order = Order.objects.filter(id=o_id).first()
-            if not order:
-                  return Response({'error':'Order not found'},status=status.HTTP_404_NOT_FOUND)
+      def post(self,request,item_id):
+            item = get_object_or_404(OrderItem,id=item_id)
+            if item.product.seller != request.user:
+                  return Response({'error':'U can not ship another seller.s product'},status=403)
+            if item.tracking_number:
+                  return Response({'error':'Already shipped !'},status=400)
             
-            if request.user.role == 'seller':
-                  has_product= False
-                  for item in order.order_items.all():
-                        if item.product.seller == request.user:
-                              has_product = True
-                              break
-                  if not has_product:
-                        return Response({'error': 'You cannot update another product status'}, status=status.HTTP_403_FORBIDDEN)
+            result = create_shipment(item)
             
-            new_status = request.data.get('status')
-            valid_status = ['shipped', 'delivered','cancelled'] # for update we need 3 of them.
-            
-            if new_status not in valid_status:
-                  return Response({'error':'Invalid status'},status.HTTP_400_BAD_REQUEST)
-            
-            #update stock restore
-            if new_status == 'cancelled':
-                  for item in order.order_items.all():
-                        item.product.stock += item.quantity
-                        item.product.save()
-                  #send mail here for info
-                  send_notification_and_email(
-                        user=order.user,
-                        subject='Order Cancelled',
-                        message=(
-                              f"Dear {order.user.first_name},\n\n"
-                              f"Your order (ID: {order.id}) has been cancelled."
-                        ),
-                        notification_type='email'
-                  )
-                  
-            elif new_status == 'shipped':
-                  send_notification_and_email(
-                        user=order.user,
-                        subject='Order Shipped!',
-                        message=(
-                            f"Dear {order.user.first_name},\n\n"
-                            f"Your order (ID: {order.id}) has been shipped."
-                        ),
-                        notification_type='email'
-                  )
-            
-            elif new_status == 'delivered':
-                  send_notification_and_email(
-                        user=order.user,
-                        subject='Order Delivered!',
-                        message=(
-                            f"Dear {order.user.first_name},\n\n"
-                            f"Your order (ID: {order.id}) has been delivered."
-                        ),
-                        notification_type='email'
-                  )
-            
-            order.status = new_status #for seller or admin.
-            order.save()
-            return Response(OrderSerializer(order).data, status=status.HTTP_200_OK) 
+            if 'error' in result:
+                  return Response({'error':result['error']},status=500)
+            else:
+                  return Response({
+                        'success':True,
+                        'tracking_number': item.tracking_number,
+                        'shipment':result
+                  },status=201)
       
 class CancelOrderAPIView(APIView):
       permission_classes = [IsCustomer]
@@ -283,4 +239,18 @@ class ActiveOrderListAPIView(APIView):
                   status__in=['pending','paid','shipped']
             ).order_by('-created_at')
             serializer = OrderHistoryCustomerSerializer(orders,many=True)
+            return Response(serializer.data,status=200)
+      
+      
+class SellerOrderItemsNotShippedAPIView(APIView):
+      permission_classes = [IsSellerOrAdmin]
+      
+      def get(self,request):
+            items = OrderItem.objects.filter(
+                  product__seller=request.user,
+                  order__status='paid',
+                  tracking_number__isnull=True
+                  ).order_by('-order__created_at')
+            
+            serializer = OrderItemSerializer(items,many=True)
             return Response(serializer.data,status=200)
