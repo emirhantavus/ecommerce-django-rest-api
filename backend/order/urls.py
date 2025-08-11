@@ -3,7 +3,7 @@ from .views import (OrderAPIView, ShipOrderItemAPIView, CancelOrderAPIView,
                     RequestReturnAPIView, ListReturnRequestsAPIView,ListReturnRequestsSellerAPIView,
                     ProcessReturnRequestsSellerAPIView, OrderHistoryListAPIView,
                     OrderHistoryDetailAPIView, OrderHistorySellerAPIView, ActiveOrderListAPIView,
-                    SellerOrderItemsNotShippedAPIView)
+                    SellerOrderItemsNotShippedAPIView, ShipmentStatusWebhookAPIView)
 
 urlpatterns = [
       path('',OrderAPIView.as_view(),name='order'),
@@ -18,4 +18,5 @@ urlpatterns = [
       path('history/seller/', OrderHistorySellerAPIView.as_view(),name='order-history-seller'),
       path('active/', ActiveOrderListAPIView.as_view(), name='active-order'),
       path('not-shipped/seller/', SellerOrderItemsNotShippedAPIView.as_view(), name='seller-active-order'),
+      path('shipment-status-webhook/', ShipmentStatusWebhookAPIView.as_view(), name='shipment-status-webhook'),
 ]

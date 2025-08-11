@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Order, OrderItem
@@ -44,6 +44,12 @@ class ShipOrderItemAPIView(APIView):
             if 'error' in result:
                   return Response({'error':result['error']},status=500)
             else:
+                  send_notification_and_email(
+                        user=item.order.user,
+                        subject='Your Order Has Been Shipped!',
+                        message=f"Your product '{item.product.name}' has been shipped. Tracking Number: {item.tracking_number}",
+                        notification_type='email'
+                  )
                   return Response({
                         'success':True,
                         'tracking_number': item.tracking_number,
@@ -254,3 +260,24 @@ class SellerOrderItemsNotShippedAPIView(APIView):
             
             serializer = OrderItemSerializer(items,many=True)
             return Response(serializer.data,status=200)
+      
+      
+      
+##### Shipment status Send_mail Webhook
+
+class ShipmentStatusWebhookAPIView(APIView):
+      permission_classes = [AllowAny,] # I will change it LATER !!!! NOT FORGET
+      
+      def post(self,request):
+            tracking_number = request.data.get('tracking_number')
+            status = request.data.get('status')
+            
+            item = OrderItem.objects.filter(tracking_number=tracking_number).first()
+            if item and status == 'delivered':
+                  send_notification_and_email(
+                        user=item.order.user,
+                        subject = "Your Order Has Been Delivered!",
+                        message = f"Your product '{item.product.name}' has been delivered successfully.",
+                        notification_type = "email"
+                  )
+            return Response({'message':'Done'},status=200)

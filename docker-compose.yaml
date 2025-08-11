@@ -2,7 +2,7 @@ version: "3.1"
 #https://codebeautify.org/yaml-validator/cbccd63a
 services:
   django:
-    container_name: ecommerce_django_backend
+    container_name: ecommerce-django-backend
     build: ./backend
     ports:
       - 8000:8000
