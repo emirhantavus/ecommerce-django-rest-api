@@ -72,12 +72,13 @@ class LoginAPIView(APIView):
                   },status=status.HTTP_400_BAD_REQUEST)
                   
 
-class ProtectedEndpoint(APIView):
-      permission_classes = [IsAuthenticated]
+class AllUsersAPIView(APIView):
+      permission_classes = [AllowAny]
       
       def get(self,request):
-            serializer = UserSerializer(request.user)
-            return Response(serializer.data,status=status.HTTP_200_OK)
+            users = CustomUser.objects.all()
+            serializer = UserSerializer(users, many=True)
+            return Response(serializer.data)
       
       
 class ProfileAPIView(APIView):

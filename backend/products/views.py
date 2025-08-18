@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response 
 from rest_framework import viewsets , status
@@ -6,28 +5,28 @@ from .models import Product, Category , Favorites
 from .serializers import CategorySerializer, ProductSerializer , SimpleProductSerializer , FavoritesSerializer
 from rest_framework.permissions import AllowAny , IsAdminUser, IsAuthenticated
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.generics import ListAPIView , RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django.core.cache import cache
-from django.views.decorators.vary import vary_on_headers
 from django.shortcuts import get_object_or_404
 import re
 from drf_yasg.utils import swagger_auto_schema
+from django.db.models import Avg, Count, Exists, OuterRef, Value, BooleanField
+from products.pagination import ProductCursorPagination
 
 class CategoryViewSet(viewsets.ModelViewSet):
       queryset = Category.objects.all()
       serializer_class = CategorySerializer
       permission_classes = [IsAdminUser] # change it later.
       
-class ProductAPIView(APIView, LimitOffsetPagination):
+class ProductAPIView(APIView, ProductCursorPagination):
       def get_permissions(self):
             if self.request.method == 'POST':
                   return [IsAuthenticated()]
             return [AllowAny()]
 
       def get(self,request):
-            queryset = Product.objects.select_related('seller','category').prefetch_related('seller__products').order_by('pk')
+            queryset = Product.objects.select_related('seller','category').order_by('id')
             
             seller_id = request.query_params.get("seller")
             if seller_id:
@@ -89,13 +88,25 @@ class ProductAPIView(APIView, LimitOffsetPagination):
                   queryset = queryset.order_by(sort_by)
             ######
             
+            qs = queryset.annotate(
+                  average_rating=Avg('reviews__rating'),
+                  review_count= Count('reviews', distinct=True)
+            )
+            
+            user = request.user
+            if user.is_authenticated:
+                  fav = Favorites.objects.filter(user=user, product_id=OuterRef('pk'))
+                  qs = qs.annotate(is_favorited=Exists(fav))
+            else:
+                  qs = qs.annotate(is_favorited=Value(False, output_field=BooleanField()))
+            
             #pagination here
-            results = self.paginate_queryset(queryset, request, view=self)
+            results = self.paginate_queryset(qs, request, view=self)
             if results is not None:
                   serializer = ProductSerializer(results, many=True)
                   return self.get_paginated_response(serializer.data)
                   
-            serializer = ProductSerializer(queryset, many=True)
+            serializer = ProductSerializer(qs, many=True)
             return Response(serializer.data,status=status.HTTP_200_OK)
       
       @swagger_auto_schema(request_body=ProductSerializer)

@@ -15,7 +15,6 @@ User = get_user_model()
 class SellerDashboardView(APIView):
       permission_classes = [IsSeller]
       
-      @swagger_auto_schema(request_body=SellerDashboardSerializer)
       def get(self, request):
             user = request.user
             products = Product.objects.filter(seller=user).order_by("-created_at")
@@ -51,7 +50,6 @@ class SellerDashboardView(APIView):
 class AdminDashboardView(APIView):
       permission_classes = [IsAdmin]
       
-      @swagger_auto_schema(request_body=AdminDashboardSerializer)
       def get(self, request):
             
             total_users = User.objects.count()
@@ -61,12 +59,13 @@ class AdminDashboardView(APIView):
             total_revenue = (OrderItem.objects.all().annotate(
                   line_total=F("price")*F('quantity')).aggregate(Sum("line_total"))["line_total__sum"] or 0)
             
-            top_selling_product = (OrderItem.objects.values("product__name").annotate(
+            top_selling_product = (OrderItem.objects.values("product__id","product__name").annotate(
                   total_price=F("price")*F("quantity")).annotate(quantity=Sum('quantity')).order_by("-quantity").first())
             
             #None control
             if top_selling_product:
                   top_product_data={
+                  "id":top_selling_product['product__id'],
                   "product":top_selling_product["product__name"],
                   "quantity":top_selling_product["quantity"],
                   "total_price":top_selling_product["total_price"]

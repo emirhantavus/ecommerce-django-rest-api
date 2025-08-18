@@ -12,6 +12,7 @@ class SellerDashboardSerializer(serializers.Serializer):
       stock_alerts = StockAlertSerializer(many=True)
       
 class TopSellingProductSerializer(serializers.Serializer):
+      id = serializers.IntegerField()
       product = serializers.CharField()
       quantity = serializers.IntegerField()
       total_price = serializers.DecimalField(max_digits=12, decimal_places=2)#Maybe we can change max_digits later. !!
