@@ -25,7 +25,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
       class Meta:
             model = User
-            fields = ('id','email','phone_number')
+            fields = ('id','email')
             
 class ProfileSerializer(serializers.ModelSerializer):
       email = serializers.SerializerMethodField()
@@ -51,3 +51,10 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
       email = serializers.EmailField()
       password = serializers.CharField()
+      
+      def validate(self, attrs):
+            email = attrs.get('email')
+            password = attrs.get('password')
+            if not email or not password:
+                  raise serializers.ValidationError('Email or password is wrong',code='authorization')
+            return attrs

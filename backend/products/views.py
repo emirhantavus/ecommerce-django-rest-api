@@ -4,7 +4,6 @@ from rest_framework import viewsets , status
 from .models import Product, Category , Favorites
 from .serializers import CategorySerializer, ProductSerializer , SimpleProductSerializer , FavoritesSerializer
 from rest_framework.permissions import AllowAny , IsAdminUser, IsAuthenticated
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.generics import ListAPIView
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -12,7 +11,7 @@ from django.shortcuts import get_object_or_404
 import re
 from drf_yasg.utils import swagger_auto_schema
 from django.db.models import Avg, Count, Exists, OuterRef, Value, BooleanField
-from products.pagination import ProductCursorPagination
+from utils.pagination import ProductCursorPagination
 
 class CategoryViewSet(viewsets.ModelViewSet):
       queryset = Category.objects.all()
@@ -126,7 +125,7 @@ class ProductAPIView(APIView, ProductCursorPagination):
 @method_decorator(cache_page(60*30, key_prefix='seller_products'),name='dispatch')
 class SellerProductsListView(ListAPIView):
       serializer_class = SimpleProductSerializer
-      permission_classes = [AllowAny]
+      permission_classes = [AllowAny]     
       
       def get_queryset(self):
             import time

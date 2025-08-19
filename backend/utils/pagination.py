@@ -5,3 +5,9 @@ class ProductCursorPagination(CursorPagination):
       page_size_query_param = 'limit'
       max_page_size= 100
       ordering='id'
+      
+class UsersCursorPagination(CursorPagination):
+      page_size=50
+      page_size_query_param='limit'
+      max_page_size=100
+      ordering='id'
