@@ -185,8 +185,14 @@ class ProductUpdateDeleteAPIView(APIView):
 class ProductDetailAPIView(APIView):
       permission_classes = [AllowAny]
       def get(self, request, p_id):
-            product = Product.objects.get(id=p_id)
-            serializer = ProductSerializer(product, context={'request':request})
+            product = get_object_or_404(
+                  Product.objects.annotate(
+                        average_rating=Avg('reviews__rating'),
+                        review_count=Count('reviews',distinct=True)
+                  ),
+                  id=p_id
+            )
+            serializer = ProductSerializer(product,context={'request':request})
             return Response(serializer.data)
       
 class FavoritesAPIView(APIView):

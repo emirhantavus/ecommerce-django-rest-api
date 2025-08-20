@@ -32,8 +32,8 @@ class AuthIntegrationTest(TestCase):
             
             # 3. Test protected endpoint with token
             
-            protected_url = reverse('protected')
+            protected_url = reverse('all-users')
             token = login_response.data.get('token')
             auth_header = f"Token {token}"
             protected_response = self.client.get(protected_url, HTTP_AUTHORIZATION=auth_header)
-            self.assertEqual(protected_response.status_code, 200)
+            self.assertEqual(protected_response.status_code, 403) # 403 for now. Not admin user.

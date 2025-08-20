@@ -138,7 +138,23 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20,
+    "DEFAULT_THROTTLE_CLASSES":[
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon":"60/min",
+        "user":"120/min",
+        "login":"10/min",
+    },
 }
+
+#for testing
+import sys
+if "test" in sys.argv: # For testing we override it.
+    REST_FRAMEWORK["DEFAULT_THROTTLE_CLASSES"] = []
+
 
 REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
 REDIS_PORT = os.getenv('REDIS_PORT', 6379)

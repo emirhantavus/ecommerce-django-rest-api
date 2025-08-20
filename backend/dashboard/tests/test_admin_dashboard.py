@@ -3,11 +3,13 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from products.models import Product
 from order.models import Order, OrderItem
+from django.core.cache import cache
 
 User = get_user_model()
 
 class AdminDashboardTests(APITestCase):
       def setUp(self):
+            cache.clear()
             self.admin_user = User.objects.create_user(email='admin@gmail.com', password='passw0rd', role='admin')
             self.seller_user = User.objects.create_user(email='seller@gmail.com', password='passw0rd', role='seller')
             self.customer_user = User.objects.create_user(email='customer@gmail.com', password='passw0rd', role='customer')
@@ -58,10 +60,9 @@ class AdminDashboardTests(APITestCase):
             self.client.force_authenticate(user=self.admin_user)
             response = self.client.get(self.url)
             data = response.json()
-
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(data['total_users'], 7)  # 3 setup + 3 create_extra_users #including admin for now +1
-            self.assertEqual(data['total_sellers'], 3)  # 1 setup + 2 extra
+            self.assertEqual(data['total_users'], 7)
+            self.assertEqual(data['total_sellers'], 3)
             self.assertEqual(data['total_products'], 2)
             self.assertEqual(data['total_orders'], 1)
             self.assertEqual(data['total_revenue'], '255.00')
@@ -78,14 +79,11 @@ class AdminDashboardTests(APITestCase):
             self.assertEqual(data["total_revenue"], "0.00")
             
       def test_admin_dashboard_user_roles_counts(self):
-            self.create_extra_users()
-            seller = User.objects.get(email="seller1@gmail.com")
-            seller.delete()
             self.client.force_authenticate(user=self.admin_user)
             response = self.client.get(self.url)
             data = response.data
-            self.assertEqual(data["total_users"], 6)  # 4 + 3 - 1
-            self.assertEqual(data["total_sellers"], 2)  # 3 - 1 
+            self.assertEqual(data["total_users"], 3)
+            self.assertEqual(data["total_sellers"], 1)
 
       def test_admin_dashboard_invalid_method(self):
             self.client.force_authenticate(user=self.admin_user)

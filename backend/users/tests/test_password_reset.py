@@ -54,7 +54,7 @@ class PasswordResetTest(APITestCase):
             self.user.refresh_from_db()
             login_url = reverse('login')
             response = self.client.post(login_url, {'email':self.user.email, 'password':'passw0rd'})
-            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.status_code, 401)
             
       def test_login_with_new_password(self):
             self.user.set_password('newpassw0rd1')

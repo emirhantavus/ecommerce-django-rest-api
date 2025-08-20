@@ -18,7 +18,7 @@ class SellerDashboardView(APIView):
       permission_classes = [IsSeller]
       
       def get(self, request):
-            cache_key = 'dash:v1:seller'
+            cache_key = f'dash:v1:seller:{request.user.id}'
             data = cache.get(cache_key)
             if not data:
                   user = request.user

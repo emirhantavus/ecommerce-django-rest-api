@@ -29,8 +29,8 @@ class LoginTestCase(TestCase):
                   'password':'wr0ngpassw2rd'
             }
             response = self.client.post(self.login_url, data)
-            self.assertEqual(response.status_code, 400)
-            self.assertIn('error',response.data)
+            self.assertEqual(response.status_code, 401)
+            self.assertIn('detail',response.data)
             
       def test_user_login_missing_password(self):
             data = {
@@ -55,8 +55,8 @@ class LoginTestCase(TestCase):
                   'password':'rand0mpassW0rd'
             }
             response = self.client.post(self.login_url, data)
-            self.assertEqual(response.status_code, 400)
-            self.assertIn('error',response.data)
+            self.assertEqual(response.status_code, 401)
+            self.assertIn('detail',response.data)
             
       def test_login_invalid_email_format(self):
             data = {

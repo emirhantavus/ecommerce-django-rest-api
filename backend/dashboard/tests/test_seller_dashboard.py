@@ -3,11 +3,13 @@ from rest_framework.test import APITestCase
 from django.contrib.auth import get_user_model
 from products.models import Product
 from order.models import Order, OrderItem
+from django.core.cache import cache
 
 User = get_user_model()
 
 class SellerDashboardTestCase(APITestCase):
       def setUp(self):
+            cache.clear()
             self.seller = User.objects.create_user(email="seller@gmail.com",password="passw0rd",role="seller")
             self.customer = User.objects.create_user(email="customer@gmail.com",password="passw0rd",role="customer")
             self.p1=Product.objects.create(name='A',seller=self.seller, price=100,stock=10)

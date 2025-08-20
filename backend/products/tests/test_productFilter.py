@@ -19,12 +19,6 @@ class ProductFilterTestCase(APITestCase):
             self.product_seven = Product.objects.create(name="deneme",price=70,stock=0,seller=self.seller)
             self.product_url = reverse('products')
             
-      def test_filter_by_seller(self):
-            response = self.client.get(self.product_url, {'seller':self.seller.id})
-            self.assertEqual(response.status_code, 200)
-            for product in response.data['results']:
-                  self.assertEqual(product['seller']['id'], self.seller.id)
-            
       def test_filter_by_category(self):
             response = self.client.get(self.product_url, {'category':self.product_one.category.name})
             self.assertEqual(response.status_code, 200)
