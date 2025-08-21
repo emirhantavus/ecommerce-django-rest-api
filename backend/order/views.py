@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from ecommerce.utils.notifications import send_notification_and_email
 from drf_yasg.utils import swagger_auto_schema
 from order.services.shipment_service import create_shipment
+from django.db.models import Prefetch
 
 class OrderAPIView(APIView):
       permission_classes = [IsAuthenticated]
@@ -240,10 +241,34 @@ class ActiveOrderListAPIView(APIView):
       permission_classes = [IsCustomer]
       
       def get(self,request):
-            orders = Order.objects.filter(
+            orders = (
+                  Order.objects.filter(
                   user=request.user,
                   status__in=['pending','paid','shipped']
-            ).order_by('-created_at')
+            )
+                      .order_by('-created_at')
+                      .prefetch_related(
+                            Prefetch( 
+                              'order_items',
+                              queryset=OrderItem.objects.select_related('product')
+                            )
+                        )
+            )
+            '''
+                  200 GET
+                  /api/order/active/
+                  195ms overall
+                  40ms on queries
+                  34 queries
+                  
+                  TO
+                  
+                  200 GET
+                  /api/order/active/
+                  40ms overall
+                  8ms on queries
+                  3 queries
+            '''
             serializer = OrderHistoryCustomerSerializer(orders,many=True)
             return Response(serializer.data,status=200)
       

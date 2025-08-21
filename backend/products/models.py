@@ -13,8 +13,16 @@ class Category(models.Model):
       
       class Meta:
             verbose_name_plural = "Categories"
+      
+      '''
+            !!!!!!!!!!!!!!!!!!!!!
+            Get metodunda ms yüksek geliyor. N+1 complexity var.
+            Kodu baştan degistir veya kisa vadede cache kullan. Ama kodu değiştirmek daha iyi gibi duruyor.
+            UNUTMA SONRA BAK !!!!
+            !!!!!!!!!!!!!!!!!!!!! Gerekirse parent kismini değiştir.
+      '''
             
-      def save(self, *args, **kwargs):
+      def save(self, *args, **kwargs): 
             if self.parent:
                   self.level = self.parent.level + 1
             else:

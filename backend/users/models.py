@@ -55,7 +55,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return f"{self.first_name} {self.last_name}".strip()
     
     def __str__(self):
-        return f"{self.email} ({self.role})"
+        return f"id: {self.id} {self.email} ({self.role})"
 
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser,on_delete=models.CASCADE ,related_name='profile')

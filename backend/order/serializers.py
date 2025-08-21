@@ -2,6 +2,10 @@ from rest_framework import serializers
 from .models import Order, OrderItem
 from cart.models import CartItem
 from order.services.shipment_service import get_shipment_by_tracking_number
+from django.db import transaction
+from decimal import Decimal
+from django.core.exceptions import ValidationError
+from django.db.models import Prefetch
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -25,29 +29,59 @@ class OrderSerializer(serializers.ModelSerializer):
             
       def create(self, validated_data):
             user = self.context['request'].user
-            cart_items = CartItem.objects.filter(user=user)
-            if not cart_items.exists():
+            cart_items = CartItem.objects.filter(user=user).select_related('product')
+            items = list(cart_items)
+            if not items:
                   raise serializers.ValidationError('cart is empty')
             
-            order = Order.objects.create(user=user, address=validated_data['address'],total_price=0)
-            total = 0 
-            for cart_item in cart_items:
-                  price = cart_item.product.discount_price
-                  OrderItem.objects.create(
-                        order=order,
-                        product=cart_item.product,
-                        quantity=cart_item.quantity,
-                        price=price
+            with transaction.atomic():
+                  order = Order.objects.create(
+                        user=user,
+                        address=validated_data['address'],
+                        total_price=Decimal('0.00')
                   )
-                  total += price * cart_item.quantity
-            order.total_price = total
-            order.save()
-            
-            #sepet temizlik burda kalsın simdilik
-            CartItem.objects.filter(user=user).delete()
-            
+                  order_items_rows = []
+                  total = Decimal('0.00')
+                  
+                  for ci in items:
+                        price = ci.product.discount_price
+                        if price is None:
+                              raise ValidationError('Product has no price.')
+                        if ci.quantity<=0:
+                              raise ValidationError('Cart item quanity must greater than 0')
+                        
+                        order_items_rows.append(
+                              OrderItem(
+                                    order=order,
+                                    product=ci.product,
+                                    quantity=ci.quantity,
+                                    price=price,
+                              )
+                        )
+                        total += Decimal(price) * ci.quantity
+                  
+                  OrderItem.objects.bulk_create(order_items_rows, batch_size=1000)
+                  
+                  Order.objects.filter(pk=order.pk).update(total_price=total)
+                  order.total_price = total
+
+                  CartItem.objects.filter(user=user).delete()
+                  
+                  order = (
+                        Order.objects.filter(pk=order.pk).prefetch_related(
+                              Prefetch(
+                                    'order_items',
+                                    queryset=OrderItem.objects.select_related('product')
+                                    )
+                              )
+                        .get()
+                  )
+                  '''
+                        With order prefetch_related, we solve product-orderitems N+1 problem but maybe no need it.
+                        Actually we won't order +100 items. It increase ms time for low quantity orders.
+                        But no big difference. But better to use it for wholesalers..
+                  '''
             return order
-            
             
 class ReturnRequestSerializer(serializers.ModelSerializer):
       class Meta:

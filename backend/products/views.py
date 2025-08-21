@@ -128,9 +128,6 @@ class SellerProductsListView(ListAPIView):
       permission_classes = [AllowAny]     
       
       def get_queryset(self):
-            import time
-            print("2 saniye bekleniyor") # simdilik kalsın sonra sil.
-            time.sleep(2)
             seller_id = self.kwargs['seller_id']
             if not seller_id:
                   raise ValueError("Not found Seller ID.")
@@ -199,7 +196,7 @@ class FavoritesAPIView(APIView):
       permission_classes = [IsAuthenticated]
       
       def get(self,request):
-            favs = Favorites.objects.filter(user=request.user)
+            favs = Favorites.objects.select_related('product').filter(user=request.user)
             serializer = FavoritesSerializer(favs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
       

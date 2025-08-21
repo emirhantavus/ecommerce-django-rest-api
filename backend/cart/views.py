@@ -13,7 +13,7 @@ class CartItemCreateListAPIView(APIView):
       
       def get(self, request):
             user = request.user
-            cartItems = CartItem.objects.filter(user=user)
+            cartItems = CartItem.objects.filter(user=user).select_related('product')
             serializer = CartItemSerializer(cartItems, many=True)
             total = sum(cart.get_total_price for cart in cartItems)
             return Response({
@@ -63,6 +63,14 @@ class CartItemRetrieveOrDestroyAPIView(APIView):
             return Response({'message':serializer.errors},status.HTTP_400_BAD_REQUEST)
       
       def delete(self, request,id):
+            #filter().delete() it's better for quick ms
             cartItem = get_object_or_404(CartItem,id=id, user=request.user)
             cartItem.delete()
             return Response({'message':'Item deleted from cart'},status.HTTP_204_NO_CONTENT)
+      
+class DeleteAllItemsAPIView(APIView):
+      permission_classes = [IsAuthenticated]
+      
+      def delete(self,request):
+            items = CartItem.objects.filter(user=request.user).delete()
+            return Response({'message':'Cart is empty'},status=204)
