@@ -13,17 +13,17 @@ def create_shipment(order_item):
       sender_name = seller.get_full_name()
       sender_address = seller.address
       
-      reciever_name = order.user.get_full_name()
-      reciever_address = order.user.address
-      reciever_phone = order.user.address
+      receiver_name = order.user.get_full_name()
+      receiver_address = order.address
+      receiver_phone = order.user.phone_number
             
       payload = {
             "sender_name": sender_name,
             "sender_address": sender_address,
-            "receiver_name": reciever_name,
-            "receiver_address": reciever_address,
-            "receiver_phone": reciever_phone,
-            "description": f"{product.name} x{order_item.quantity}"
+            "receiver_name": receiver_name,
+            "receiver_address": receiver_address,
+            "receiver_phone": receiver_phone,
+            "description": f"{product.name} x {order_item.quantity}"
       }
       
       try:
@@ -33,7 +33,7 @@ def create_shipment(order_item):
             tracking_number = data.get('tracking_number')
             if tracking_number:
                   order_item.tracking_number = tracking_number
-                  order_item.save()
+                  order_item.save(update_fields=['tracking_number'])
             return data
       except Exception as e:
             print("Shipment API Error: ",e)

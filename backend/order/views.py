@@ -5,13 +5,16 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Order, OrderItem
 from .serializers import (OrderSerializer, ReturnRequestSerializer,
-                          OrderHistoryCustomerSerializer, OrderHistorySellerSerializer ,OrderItemSerializer)
+                          OrderHistoryCustomerSerializer, OrderHistorySellerSerializer ,OrderItemSerializer,
+                          SellerOrderItemSerializer)
 from .permissions import IsCustomer, IsSellerOrAdmin
 from django.shortcuts import get_object_or_404
 from ecommerce.utils.notifications import send_notification_and_email
 from drf_yasg.utils import swagger_auto_schema
 from order.services.shipment_service import create_shipment
 from django.db.models import Prefetch
+from products.models import Product
+from order.services.shipment_service import get_shipment_by_tracking_number
 
 class OrderAPIView(APIView):
       permission_classes = [IsAuthenticated]
@@ -34,7 +37,7 @@ class ShipOrderItemAPIView(APIView):
       permission_classes = [IsSellerOrAdmin]
       
       def post(self,request,item_id):
-            item = get_object_or_404(OrderItem,id=item_id)
+            item = get_object_or_404(OrderItem.objects.select_related('product','order','order__user'),id=item_id)
             if item.product.seller != request.user:
                   return Response({'error':'U can not ship another seller.s product'},status=403)
             if item.tracking_number:
@@ -70,10 +73,14 @@ class CancelOrderAPIView(APIView):
             if order.status not in ['pending','paid']:
                   return Response({'error': 'Order cannot be cancelled at this stage.'}, status=status.HTTP_400_BAD_REQUEST)
             
-            #update stock restore
-            for item in order.order_items.all():
+            items = order.order_items.select_related('product')
+            products_to_update = []
+            
+            #update stock restore // N+1 problem
+            for item in items:
                   item.product.stock += item.quantity
-                  item.product.save()
+                  products_to_update.append(item.product)
+            Product.objects.bulk_update(products_to_update,['stock'])
             
             send_notification_and_email(
                   user=request.user,
@@ -94,9 +101,12 @@ class RequestReturnAPIView(APIView):
       
       @swagger_auto_schema(request_body=ReturnRequestSerializer)
       def post(self,request,item_id):
-            item = get_object_or_404(OrderItem, id=item_id, order__user=request.user)
-            
-            if item.order.status != 'delivered':
+            item = (
+                  OrderItem.objects.select_related('product__seller__profile','order__user').get(
+                        id=item_id, order__user=request.user)
+            )
+            shipment = get_shipment_by_tracking_number(item.tracking_number)
+            if not shipment or shipment.get('status') != 'delivered':
                   return Response({'error':'Only delivered items can be returned or exchanged'}, status=400)
             
             if item.return_status != 'none':
@@ -142,8 +152,6 @@ class ListReturnRequestsAPIView(APIView):
             
             if status_param:
                   items = items.filter(return_status=status_param)
-            else:
-                  items=items.filter(return_status='requested')
                   
             serializer = ReturnRequestSerializer(items, many=True)#serializer kısmını sonra genisleticez unutma.
             return Response(serializer.data,status=200)
@@ -157,8 +165,6 @@ class ListReturnRequestsSellerAPIView(APIView):
             
             if status_param:
                   items = items.filter(return_status=status_param)
-            else:
-                  items = items.filter(return_status='requested')
             serializer = ReturnRequestSerializer(items, many=True)
             return Response(serializer.data,status=200)
       
@@ -167,7 +173,14 @@ class ProcessReturnRequestsSellerAPIView(APIView):
       
       @swagger_auto_schema(request_body=None)
       def post(self,request,item_id):
-            item = get_object_or_404(OrderItem, id=item_id, product__seller=request.user, return_status='requested')
+            item = (
+                  OrderItem.objects.select_related('product','order__user')
+                  .filter(id=item_id,product__seller=request.user,return_status='requested')
+                  .first()
+            )
+            if not item:
+                  return Response({'message':'OrderItem not found'},status=400)
+            
             action = request.data.get('action')
             
             if action == 'approve':
@@ -281,11 +294,18 @@ class SellerOrderItemsNotShippedAPIView(APIView):
                   product__seller=request.user,
                   order__status='paid',
                   tracking_number__isnull=True
-                  ).order_by('-order__created_at')
-            
-            serializer = OrderItemSerializer(items,many=True)
+                  ).order_by('-order__created_at').select_related('product','order__user')
+            serializer = SellerOrderItemSerializer(items,many=True)
             return Response(serializer.data,status=200)
       
+class SellerCancelledItemsAPIView(APIView):
+      permission_classes = [IsSellerOrAdmin]
+      
+      def get(self,request):
+            items = OrderItem.objects.filter(
+                  product__seller=request.user, order__status='cancelled').select_related('product','order')
+            serializer = OrderItemSerializer(items, many=True)
+            return Response(serializer.data,status=200)
       
       
 ##### Shipment status Send_mail Webhook

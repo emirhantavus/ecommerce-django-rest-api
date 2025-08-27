@@ -7,18 +7,27 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
 
+class ShipmentMixin(serializers.Serializer):
+      shipment = serializers.SerializerMethodField()
 
-class OrderItemSerializer(serializers.ModelSerializer):
+      def get_shipment(self, obj):
+            if obj.tracking_number:
+                from order.services.shipment_service import get_shipment_by_tracking_number
+                return get_shipment_by_tracking_number(obj.tracking_number)
+            return None
+
+
+class OrderItemSerializer(serializers.ModelSerializer, ShipmentMixin):
       product_name = serializers.CharField(source='product.name',read_only=True)
       shipment = serializers.SerializerMethodField()
       class Meta:
             model = OrderItem
             fields = ('id','product_name','quantity','price','shipment')
             
-      def get_shipment(self,obj):
-            if obj.tracking_number:
-                  return get_shipment_by_tracking_number(obj.tracking_number)
-            return None
+      # def get_shipment(self,obj):
+      #       if obj.tracking_number:
+      #             return get_shipment_by_tracking_number(obj.tracking_number)
+      #       return None
 
 class OrderSerializer(serializers.ModelSerializer):
       items = OrderItemSerializer(many=True, read_only=True, source='order_items')
@@ -127,3 +136,24 @@ class OrderHistorySellerSerializer(serializers.ModelSerializer):
       
       def get_item_total_price(self,data):
             return data.quantity * data.price
+      
+      
+class SellerOrderItemSerializer(serializers.ModelSerializer, ShipmentMixin):
+      product_name = serializers.CharField(source='product.name', read_only=True)
+      buyer = serializers.SerializerMethodField()
+      order_id = serializers.IntegerField(source='order.id', read_only=True)
+      order_address = serializers.CharField(source='order.address', read_only=True)
+
+      class Meta:
+            model = OrderItem
+            fields = (
+                'id','product_name','quantity','price','shipment',
+                'buyer','order_id','order_address'
+            )
+
+      def get_buyer(self, obj):
+            return {
+                "id": obj.order.user.id,
+                "name": f"{obj.order.user.first_name} {obj.order.user.last_name}",
+                "email": obj.order.user.email
+            }
