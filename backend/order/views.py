@@ -15,6 +15,9 @@ from order.services.shipment_service import create_shipment
 from django.db.models import Prefetch
 from products.models import Product
 from order.services.shipment_service import get_shipment_by_tracking_number
+import requests
+
+SHIPMENT_API_URL = "http://shipping-api:9000/api/shipments/"
 
 class OrderAPIView(APIView):
       permission_classes = [IsAuthenticated]
@@ -22,7 +25,7 @@ class OrderAPIView(APIView):
       def get(self, request):
             order = Order.objects.filter(user=request.user, status='paid')
             serializer = OrderSerializer(order, many=True)
-            return Response(serializer.data,status.HTTP_200_OK) #Unnecessary here !!
+            return Response(serializer.data,status.HTTP_200_OK)
       
       @swagger_auto_schema(request_body=OrderSerializer)
       def post(self, request):
@@ -229,7 +232,9 @@ class OrderHistoryListAPIView(APIView):
       permission_classes = [IsCustomer]
       
       def get(self,request):
-            orders = Order.objects.filter(user=request.user,status__in=['delivered','cancelled'])
+            orders = (Order.objects.filter(user=request.user,status__in=['delivered','cancelled'])
+                      .prefetch_related(Prefetch('order_items',queryset=OrderItem.objects.select_related('product')))
+                      .select_related('user'))
             serializer = OrderHistoryCustomerSerializer(orders,many=True)
             return Response(serializer.data,status=200)
       
@@ -238,7 +243,11 @@ class OrderHistoryDetailAPIView(APIView):
       permission_classes = [IsCustomer]
       
       def get(self,request,o_id):
-            order = get_object_or_404(Order,user=request.user,id=o_id)
+            order = get_object_or_404(Order.objects.prefetch_related(
+                  Prefetch('order_items',queryset=OrderItem.objects.select_related('product')))
+                  .select_related('user'),
+                  user=request.user,
+                  id=o_id)
             serializer = OrderHistoryCustomerSerializer(order)
             return Response(serializer.data,status=200)
       
@@ -246,8 +255,20 @@ class OrderHistorySellerAPIView(APIView):
       permission_classes = [IsSellerOrAdmin]
       
       def get(self,request):
-            items = OrderItem.objects.filter(product__seller=request.user,order__status='delivered').order_by('-order__created_at')
-            serializer = OrderHistorySellerSerializer(items, many=True)
+            items = (OrderItem.objects.filter(product__seller=request.user).select_related('order__user','product')
+                     .order_by('-id'))
+            tracking_numbers = [i.tracking_number for i in items if i.tracking_number]
+            if not tracking_numbers:
+                  return Response([],status=200)
+            
+            resp = requests.post(
+                  f"{SHIPMENT_API_URL}get-status/",
+                  json={'tracking_numbers':tracking_numbers},
+                  timeout=5
+            )
+            shipment_status = resp.json()
+            delivered_items = [item for item in items if shipment_status.get(item.tracking_number) == 'delivered']
+            serializer = OrderHistorySellerSerializer(delivered_items, many=True,context={'shipment_status':shipment_status})
             return Response(serializer.data,status=200)
       
 class ActiveOrderListAPIView(APIView):

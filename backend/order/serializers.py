@@ -113,17 +113,15 @@ class OrderHistoryCustomerSerializer(serializers.ModelSerializer):
             
 class OrderHistorySellerSerializer(serializers.ModelSerializer):
       buyer = serializers.SerializerMethodField()
-      order_id = serializers.IntegerField(source='order.id', read_only=True)
-      order_status = serializers.CharField(source='order.status', read_only=True)
-      order_date = serializers.DateTimeField(source='order.created_at', read_only=True)
       product_name = serializers.CharField(source='product.name', read_only=True)
       product_price = serializers.DecimalField(source='price', read_only=True, max_digits=10, decimal_places=2)
       item_total_price = serializers.SerializerMethodField()
+      shipment_status = serializers.SerializerMethodField()
       
       class Meta:
             model = OrderItem
             fields = (
-                  'id','order_id','order_date','order_status','product_name','product_price','quantity','item_total_price','buyer'
+                  'id','product_name','product_price','quantity','item_total_price','buyer','shipment_status'
                   )
             
       def get_buyer(self,data):
@@ -136,6 +134,10 @@ class OrderHistorySellerSerializer(serializers.ModelSerializer):
       
       def get_item_total_price(self,data):
             return data.quantity * data.price
+      
+      def get_shipment_status(self,data):
+            status = self.context.get('shipment_status', {})
+            return status.get(data.tracking_number)
       
       
 class SellerOrderItemSerializer(serializers.ModelSerializer, ShipmentMixin):
